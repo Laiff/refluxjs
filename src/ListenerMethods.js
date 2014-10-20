@@ -125,7 +125,7 @@ module.exports = {
         defaultCallback = (defaultCallback && this[defaultCallback]) || defaultCallback;
         var me = this;
         if (_.isFunction(defaultCallback) && _.isFunction(listenable.getDefaultData)) {
-            data = listenable.getDefaultData();
+            var data = listenable.getDefaultData();
             if (data && _.isFunction(data.then)) {
                 data.then(function() {
                     defaultCallback.apply(me, arguments);
@@ -166,6 +166,6 @@ module.exports = {
      * @param {...Publishers} publishers Publishers that should be tracked.
      * @param {Function|String} callback The method to call when all publishers have emitted
      */
-    joinStrict: maker("strict"),
+    joinStrict: maker("strict")
 };
 
