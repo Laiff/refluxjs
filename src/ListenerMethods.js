@@ -124,7 +124,7 @@ module.exports = {
     fetchDefaultData: function (listenable, defaultCallback) {
         defaultCallback = (defaultCallback && this[defaultCallback]) || defaultCallback;
         var me = this;
-        if (_.isFunction(defaultCallback) && _.isFunction(listenable.getDefaltData)) {
+        if (_.isFunction(defaultCallback) && _.isFunction(listenable.getDefaultData)) {
             var data = listenable.getDefaultData();
             if (data && _.isFunction(data.then)) {
                 data.then(function() {
