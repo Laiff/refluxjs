@@ -267,7 +267,7 @@ status:  OFFLINE
 ```
 ### React component example
 
-Register your component to listen for changes in your data stores, preferably in the `componentDidMount` [lifecycle method](http://facebook.github.io/react/docs/component-specs.html) and unregister in the `componentWillUnmount`, like this:
+Register your component to listen for changes in your data stores, preferably in the `componentWillMount` [lifecycle method](http://facebook.github.io/react/docs/component-specs.html) and unregister in the `componentWillUnmount`, like this:
 
 ```javascript
 var Status = React.createClass({
@@ -277,7 +277,7 @@ var Status = React.createClass({
             currentStatus: status
         });
     },
-    componentDidMount: function() {
+    componentWillMount: function() {
         this.unsubscribe = statusStore.listen(this.onStatusChange);
     },
     componentWillUnmount: function() {
@@ -302,7 +302,7 @@ var Status = React.createClass({
             currentStatus: status
         });
     },
-    componentDidMount: function() {
+    componentWillMount: function() {
         this.listenTo(statusStore, this.onStatusChange);
     },
     render: function() {
@@ -316,7 +316,7 @@ The mixin provides the `listenTo` method for the React component, that works muc
 
 #### Using Reflux.listenTo
 
-If you're not reliant on any special logic for the `this.listenTo` calls inside `componentDidMount`, you can instead use a call to `Reflux.listenTo` as a mixin. That will automatically set up the `componentDidMount` and the rest for you, as well as add the `ListenerMixin` functionality. With this our example above can be reduced even further:
+If you're not reliant on any special logic for the `this.listenTo` calls inside `componentWillMount`, you can instead use a call to `Reflux.listenTo` as a mixin. That will automatically set up the `componentWillMount` and the rest for you, as well as add the `ListenerMixin` functionality. With this our example above can be reduced even further:
 
 ```javascript
 var Status = React.createClass({
@@ -428,7 +428,7 @@ Once a join is triggered it will reset, and thus it can trigger again when all p
 
 #### Using the listener instance methods
 
-All objects using the listener API (stores, React components using `ListenerMixin`, or other components using the `ListenerMethods`) gain access to the four join instance methods, named after the argument strategy. Here's an example saving the last emission from each publisher: 
+All objects using the listener API (stores, React components using `ListenerMixin`, or other components using the `ListenerMethods`) gain access to the four join instance methods, named after the argument strategy. Here's an example saving the last emission from each publisher:
 
 ```javascript
 var gainHeroBadgeStore = Reflux.createStore({

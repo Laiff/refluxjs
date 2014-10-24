@@ -4,6 +4,8 @@ var _ = require('./utils'),
 /**
  * A module meant to be consumed as a mixin by a React component. Supplies the methods from
  * `ListenerMethods` mixin and takes care of teardown of subscriptions.
+ *
+ * @mixin ListenerMixin
  */
 module.exports = _.extend({
 

@@ -19,13 +19,13 @@ describe('using the connect(...) mixin',function(){
             context = {setState: sinon.spy()},
             result = _.extend(context,connect(listenable));
 
-        it("should add componentDidMount and WillUnmount",function(){
-            assert.isFunction(context.componentDidMount);
+        it("should add componentWillMount and WillUnmount",function(){
+            assert.isFunction(context.componentWillMount);
             assert.isFunction(context.componentWillUnmount);
             assert.equal(context.componentWillUnmount,Reflux.ListenerMethods.stopListeningToAll);
         });
 
-        result.componentDidMount();
+        result.componentWillMount();
 
         it("should call listen on the listenable correctly",function(){
             assert.equal(1,listenable.listen.callCount);
@@ -54,7 +54,7 @@ describe('using the connect(...) mixin',function(){
             context = {setState: sinon.spy()},
             result = _.extend(context,connect(listenable,key));
 
-        result.componentDidMount();
+        result.componentWillMount();
 
         it("should call listen on the listenable correctly",function(){
             assert.equal(1,listenable.listen.callCount);
@@ -77,7 +77,7 @@ describe('using the connect(...) mixin',function(){
             listenable = {listen: sinon.spy()},
             context = {setState: sinon.spy()},
             result = _.extend(context,connect(listenable,key));
-        result.componentDidMount();
+        result.componentWillMount();
         it("should send listenable callback which calls setState correctly",function(){
             listenable.listen.firstCall.args[0](triggerdata);
             assert.deepEqual([_.object([key],[triggerdata])],context.setState.firstCall.args);

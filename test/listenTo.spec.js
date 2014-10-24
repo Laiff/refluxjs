@@ -17,13 +17,13 @@ describe('the listenTo shorthand',function(){
             callback = "CALLBACK",
             result = _.extend({method:callback},listenTo(listenable,"method",initial));
 
-        it("should return object with componentDidMount and componentWillUnmount methods",function(){
-            assert.isFunction(result.componentDidMount);
+        it("should return object with componentWillMount and componentWillUnmount methods",function(){
+            assert.isFunction(result.componentWillMount);
             assert.isFunction(result.componentWillUnmount);
         });
 
-        describe("when calling the added componentDidMount",function(){
-            result.componentDidMount();
+        describe("when calling the added componentWillMount",function(){
+            result.componentWillMount();
 
             it("should add all methods from ListenerMethods",function(){
                 for(var m in Reflux.ListenerMethods){

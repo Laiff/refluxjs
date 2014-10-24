@@ -3,7 +3,7 @@ var Reflux = require('../src'),
 
 module.exports = function(listenable,key){
     return {
-        componentDidMount: function(){
+        componentWillMount: function(){
             for(var m in Reflux.ListenerMethods){
                 if (this[m] !== Reflux.ListenerMethods[m]){
                     if (this[m]){
