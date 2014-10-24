@@ -1,4 +1,5 @@
-var _ = require('./utils'),
+var invariant = require('react/lib/invariant'),
+    _ = require('./utils'),
     maker = require('./joins').instanceJoinCreator;
 
 /**
@@ -12,10 +13,10 @@ module.exports = {
      * @param {Action|Store} listenable The listenable we want to search for
      * @returns {Boolean} The result of a recursive search among `this.subscriptions`
      */
-    hasListener: function(listenable) {
+    hasListener: function (listenable) {
         var i = 0,
             listener;
-        for (;i < (this.subscriptions||[]).length; ++i) {
+        for (; i < (this.subscriptions || []).length; ++i) {
             listener = this.subscriptions[i].listenable;
             if (listener === listenable || listener.hasListener && listener.hasListener(listenable)) {
                 return true;
@@ -29,12 +30,13 @@ module.exports = {
      *
      * @param {Object} listenables An object of listenables. Keys will be used as callback method names.
      */
-    listenToMany: function(listenables){
-        for(var key in listenables){
-            var cbname = _.callbackName(key),
-                localname = this[cbname] ? cbname : this[key] ? key : undefined;
-            if (localname){
-                this.listenTo(listenables[key],localname,this[cbname+"Default"]||this[localname+"Default"]||localname);
+    listenToMany: function (listenables) {
+        for (var key in listenables) {
+            var cbName = _.callbackName(key),
+                localName = this[cbName] ? cbName : this[key] ? key : undefined;
+            if (localName) {
+                var defaultCallback = this[cbName + "Default"] || this[localName + "Default"] || localName;
+                this.listenTo(listenables[key], localName, defaultCallback);
             }
         }
     },
@@ -42,20 +44,24 @@ module.exports = {
     /**
      * Checks if the current context can listen to the supplied listenable
      *
-     * @param {Action|Store} listenable An Action or Store that should be
+     * @param {(Action|Store)} listenable An Action or Store that should be
      *  listened to.
      * @returns {String|Undefined} An error message, or undefined if there was no problem.
      */
-    validateListening: function(listenable){
-        if (listenable === this) {
-            return "Listener is not able to listen to itself";
-        }
-        if (!_.isFunction(listenable.listen)) {
-            return listenable + " is missing a listen method";
-        }
-        if (listenable.hasListener && listenable.hasListener(this)) {
-            return "Listener cannot listen to this listenable because of circular loop";
-        }
+    validateListening: function (listenable) {
+        invariant(
+                listenable !== this,
+            "Listener is not able to listen to itself"
+        );
+        invariant(
+            _.isFunction(listenable.listen),
+            "`%s` is missing a listen method",
+            listenable
+        );
+        invariant(
+            !(listenable.hasListener && listenable.hasListener(this)),
+            "Listener cannot listen to this listenable because of circular loop"
+        );
     },
 
     /**
@@ -67,23 +73,24 @@ module.exports = {
      * @param {Function|String} defaultCallback The callback to register as default handler
      * @returns {Object} A subscription obj where `stop` is an unsub function and `listenable` is the object being listened to
      */
-    listenTo: function(listenable, callback, defaultCallback) {
-        var desub, unsubscriber, subscriptionobj, subs = this.subscriptions = this.subscriptions || [];
-        _.throwIf(this.validateListening(listenable));
+    listenTo: function (listenable, callback, defaultCallback) {
+        var deSub, unsubscriber, subscriptionObj,
+            subs = this.subscriptions;
+        this.validateListening(listenable);
         this.fetchDefaultData(listenable, defaultCallback);
-        desub = listenable.listen(this[callback]||callback, this);
-        unsubscriber = function() {
-            var index = subs.indexOf(subscriptionobj);
-            _.throwIf(index === -1,'Tried to remove listen already gone from subscriptions list!');
+        deSub = listenable.listen(this[callback] || callback, this);
+        unsubscriber = function () {
+            var index = subs.indexOf(subscriptionObj);
+            invariant(index !== -1, 'Tried to remove listen already gone from subscriptions list!');
             subs.splice(index, 1);
-            desub();
+            deSub();
         };
-        subscriptionobj = {
+        subscriptionObj = {
             stop: unsubscriber,
             listenable: listenable
         };
-        subs.push(subscriptionobj);
-        return subscriptionobj;
+        subs.push(subscriptionObj);
+        return subscriptionObj;
     },
 
     /**
@@ -92,27 +99,26 @@ module.exports = {
      * @param {Action|Store} listenable The action or store we no longer want to listen to
      * @returns {Boolean} True if a subscription was found and removed, otherwise false.
      */
-    stopListeningTo: function(listenable){
-        var sub, i = 0, subs = this.subscriptions || [];
-        for(;i < subs.length; i++){
-            sub = subs[i];
-            if (sub.listenable === listenable){
+    stopListeningTo: function (listenable) {
+        var subs = this.subscriptions;
+        return !!subs.reduce(function (acc, sub) {
+            if (sub.listenable === listenable) {
                 sub.stop();
-                _.throwIf(subs.indexOf(sub)!==-1,'Failed to remove listen from subscriptions list!');
+                invariant(subs.indexOf(sub) === -1, 'Failed to remove listen from subscriptions list!');
                 return true;
             }
-        }
-        return false;
+            return acc;
+        }, false);
     },
 
     /**
      * Stops all subscriptions and empties subscriptions array
      */
-    stopListeningToAll: function(){
-        var remaining, subs = this.subscriptions || [];
-        while((remaining=subs.length)){
+    stopListeningToAll: function () {
+        var remaining, subs = this.subscriptions;
+        while ((remaining = subs.length)) {
             subs[0].stop();
-            _.throwIf(subs.length!==remaining-1,'Failed to remove listen from subscriptions list!');
+            invariant(subs.length === remaining - 1, 'Failed to remove listen from subscriptions list!');
         }
     },
 
@@ -127,7 +133,7 @@ module.exports = {
         if (_.isFunction(defaultCallback) && _.isFunction(listenable.getDefaultData)) {
             var data = listenable.getDefaultData();
             if (data && _.isFunction(data.then)) {
-                data.then(function() {
+                data.then(function () {
                     defaultCallback.apply(me, arguments);
                 });
             } else {

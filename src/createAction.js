@@ -12,6 +12,7 @@ var invariant = require('react/lib/invariant'),
  * be overridden in the definition object.
  *
  * @param {Object} definition The action object definition
+ * @returns {Action} Action
  */
 module.exports = function (definition) {
 

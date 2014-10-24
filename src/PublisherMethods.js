@@ -13,7 +13,8 @@ module.exports = {
      * undefined, that will be passed on as arguments for shouldEmit and
      * emission.
      */
-    preEmit: function() {},
+    preEmit: function () {
+    },
 
     /**
      * Hook used by the publisher after `preEmit` to determine if the
@@ -22,7 +23,9 @@ module.exports = {
      *
      * @returns {Boolean} true if event should be emitted
      */
-    shouldEmit: function() { return true; },
+    shouldEmit: function () {
+        return true;
+    },
 
     /**
      * Subscribes the given callback for action triggered
@@ -31,12 +34,12 @@ module.exports = {
      * @param {Mixed} [optional] bindContext The context to bind the callback with
      * @returns {Function} Callback that unsubscribes the registered event handler
      */
-    listen: function(callback, bindContext) {
-        var eventHandler = function(args) {
+    listen: function (callback, bindContext) {
+        var eventHandler = function (args) {
             callback.apply(bindContext, args);
         }, me = this;
         this.emitter.addListener(this.eventLabel, eventHandler);
-        return function() {
+        return function () {
             me.emitter.removeListener(me.eventLabel, eventHandler);
         };
     },
@@ -44,7 +47,7 @@ module.exports = {
     /**
      * Publishes an event using `this.emitter` (if `shouldEmit` agrees)
      */
-    trigger: function() {
+    trigger: function () {
         var args = arguments,
             pre = this.preEmit.apply(this, args);
         args = pre === undefined ? args : _.isArguments(pre) ? pre : [].concat(pre);
@@ -56,9 +59,9 @@ module.exports = {
     /**
      * Tries to publish the event on the next tick
      */
-    triggerAsync: function(){
-        var args = arguments,me = this;
-        _.nextTick(function() {
+    triggerAsync: function () {
+        var args = arguments, me = this;
+        _.nextTick(function () {
             me.trigger.apply(me, args);
         });
     }
