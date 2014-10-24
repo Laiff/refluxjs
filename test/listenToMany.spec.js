@@ -1,7 +1,7 @@
-var assert = require('chai').assert,
+var merge = require('react/lib/merge'),
+    assert = require('chai').assert,
     sinon = require('sinon'),
     listenToMany = require('../src/listenToMany'),
-    _ = require('../src/utils'),
     Reflux = require('../src');
 
 describe('the listenToMany shorthand',function(){
@@ -18,7 +18,7 @@ describe('the listenToMany shorthand',function(){
                 onFirstAction: sinon.spy(),
                 onSecondAction: sinon.spy()
             },
-            result = _.extend(context,listenToMany(listenables));
+            result = merge(context, listenToMany(listenables));
 
         it("should return object with componentWillMount and componentWillUnmount methods",function(){
             assert.isFunction(result.componentWillMount);

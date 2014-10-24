@@ -1,4 +1,4 @@
-var _ = require('./utils'),
+var merge = require('react/lib/merge'),
     ListenerMethods = require('./ListenerMethods');
 
 /**
@@ -7,7 +7,7 @@ var _ = require('./utils'),
  *
  * @mixin ListenerMixin
  */
-module.exports = _.extend({
+module.exports = merge({
 
     /**
      * Cleans up all listener previously registered.

@@ -1,7 +1,7 @@
-var assert = require('chai').assert,
+var merge = require('react/lib/merge'),
+    assert = require('chai').assert,
     sinon = require('sinon'),
     listenTo = require('../src/listenTo'),
-    _ = require('../src/utils'),
     Reflux = require('../src');
 
 describe('the listenTo shorthand',function(){
@@ -15,7 +15,7 @@ describe('the listenTo shorthand',function(){
             },
             initial = sinon.spy(),
             callback = "CALLBACK",
-            result = _.extend({method:callback},listenTo(listenable,"method",initial));
+            result = merge({method: callback}, listenTo(listenable, "method", initial));
 
         it("should return object with componentWillMount and componentWillUnmount methods",function(){
             assert.isFunction(result.componentWillMount);

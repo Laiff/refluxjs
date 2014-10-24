@@ -1,7 +1,7 @@
-var chai = require('chai'),
+var mixInto = require('react/lib/mixInto'),
+    chai = require('chai'),
     assert = chai.assert,
     Reflux = require('../src'),
-    _ = require('../src/utils'),
     Q = require('q');
 
 chai.use(require('chai-as-promised'));
@@ -190,7 +190,7 @@ describe('Composed listenable with stores', function() {
                     this.listenTo(storeAll, this.trigger);
                     this.listenTo(anotherAction);
                 };
-                _.extend(Component.prototype, Reflux.ListenerMixin);
+                mixInto(Component, Reflux.ListenerMixin);
             });
 
             it('should not crash', function() {

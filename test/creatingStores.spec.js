@@ -1,7 +1,7 @@
-var chai = require('chai'),
+var merge = require('react/lib/merge'),
+    chai = require('chai'),
     assert = chai.assert,
     Reflux = require('../src'),
-    _ = require('../src/utils'),
     Q = require('q'),
     sinon = require('sinon');
 
@@ -178,7 +178,7 @@ describe('Creating stores', function() {
         });
 
         it('should get default data from getDefaultData()', function() {
-            var store = Reflux.createStore(_.extend(baseDefinition, {
+            var store = Reflux.createStore(merge(baseDefinition, {
                 getDefaultData: function () {
                     return ['default data'];
                 }
@@ -188,7 +188,7 @@ describe('Creating stores', function() {
         });
 
         it('should get default data from getDefaultData() returned promise', function() {
-            var store = Reflux.createStore(_.extend(baseDefinition, {
+            var store = Reflux.createStore(merge(baseDefinition, {
                 getDefaultData: function () {
                     return Q.Promise(function (resolve) {
                         setTimeout(function () {

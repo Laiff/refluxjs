@@ -11,14 +11,14 @@ var Reflux = require('../src');
  * @param {Function|String} defaultCallback The callback to register as default handler
  * @returns {Object} An object to be used as a mixin, which sets up the listener for the given listenable.
  */
-module.exports = function(listenable,callback,initial){
+module.exports = function (listenable, callback, initial) {
     return {
         /**
          * Set up the mixin before the initial rendering occurs. Import methods from `ListenerMethods`
          * and then make the call to `listenTo` with the arguments provided to the factory function
          */
-        componentWillMount: function() {
-            this.listenTo(listenable,callback,initial);
+        componentWillMount: function () {
+            this.listenTo(listenable, callback, initial);
         },
         /**
          * Cleans up all listener previously registered.
