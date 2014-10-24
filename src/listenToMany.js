@@ -15,14 +15,6 @@ module.exports = function(listenables){
          * and then make the call to `listenTo` with the arguments provided to the factory function
          */
         componentWillMount: function() {
-            for(var m in Reflux.ListenerMethods){
-                if (this[m] !== Reflux.ListenerMethods[m]){
-                    if (this[m]){
-                        throw "Can't have other property '"+m+"' when using Reflux.listenToMany!";
-                    }
-                    this[m] = Reflux.ListenerMethods[m];
-                }
-            }
             this.listenToMany(listenables);
         },
         /**
