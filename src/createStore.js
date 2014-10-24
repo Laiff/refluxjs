@@ -1,4 +1,7 @@
-var _ = require('./utils'),
+var invariant = require('react/lib/invariant'),
+    mixInto = require('react/lib/mixInto'),
+    mergeInto = require('react/lib/mergeInto'),
+    _ = require('./utils'),
     Reflux = require('../src'),
     Keep = require('./Keep'),
     allowed = {preEmit:1,shouldEmit:1};
@@ -15,16 +18,15 @@ module.exports = function(definition) {
 
     definition = definition || {};
 
-    for(var d in definition){
-        if (!allowed[d] && (Reflux.PublisherMethods[d] || Reflux.ListenerMethods[d])){
-            throw new Error("Cannot override API method " + d + 
-                " in store creation. Use another method name or override it on Reflux.PublisherMethods / Reflux.ListenerMethods instead."
-            );
-        }
-    }
+    for (var d in definition)
+        invariant(
+            allowed[d] || !(Reflux.PublisherMethods[d] || Reflux.ListenerMethods[d]),
+            "Cannot override API method `%s` in action creation. " +
+            "Use another method name or override it on Reflux.PublisherMethods / Reflux.ListenerMethods instead.",
+            d
+        );
 
     function Store() {
-        var i=0, arr;
         this.subscriptions = [];
         this.emitter = new _.EventEmitter();
         this.eventLabel = "change";
@@ -32,14 +34,16 @@ module.exports = function(definition) {
             this.init();
         }
         if (this.listenables){
-            arr = [].concat(this.listenables);
-            for(;i < arr.length;i++){
-                this.listenToMany(arr[i]);
-            }
+            [].concat(this.listenables).forEach(this.listenToMany);
         }
     }
 
-    _.extend(Store.prototype, Reflux.ListenerMethods, Reflux.PublisherMethods, definition);
+    var context = {};
+    mergeInto(context, Reflux.ListenerMethods);
+    mergeInto(context, Reflux.PublisherMethods);
+    mergeInto(context, definition);
+
+    mixInto(Store, context);
 
     var store = new Store();
     Keep.createdStores.push(store);

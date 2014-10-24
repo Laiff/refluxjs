@@ -19,7 +19,7 @@ module.exports = function (definition) {
 
     for (var d in definition) {
         invariant(
-            !(!allowed[d] && Reflux.PublisherMethods[d]),
+            allowed[d] || !Reflux.PublisherMethods[d],
             "Cannot override API method `%s` in action creation. " +
             "Use another method name or override it on Reflux.PublisherMethods instead.",
             d
@@ -31,12 +31,11 @@ module.exports = function (definition) {
         emitter: new _.EventEmitter(),
         _isAction: true
     };
-    var context = {};
 
+    var context = {};
     mergeInto(context, internal);
     mergeInto(context, Reflux.PublisherMethods);
     mergeInto(context, definition);
-
 
     var functor = function () {
         functor[functor.sync ? "trigger" : "triggerAsync"].apply(functor, arguments);
