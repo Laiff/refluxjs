@@ -1,5 +1,4 @@
-var pt = require('react/lib/ReactPropTypes'),
-    Reflux = require('../src'),
+var Reflux = require('../src'),
     _ = require('./utils');
 
 module.exports = function (listenable, key) {

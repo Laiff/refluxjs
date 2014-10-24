@@ -15,7 +15,8 @@ describe('the listenTo shorthand',function(){
             },
             initial = sinon.spy(),
             callback = "CALLBACK",
-            result = merge({method: callback}, listenTo(listenable, "method", initial));
+            mixin = merge(Reflux.ListenerMethods, listenTo(listenable, "method", initial)),
+            result = merge({method: callback}, mixin);
 
         it("should return object with componentWillMount and componentWillUnmount methods",function(){
             assert.isFunction(result.componentWillMount);

@@ -18,13 +18,14 @@ module.exports = function(definition) {
 
     definition = definition || {};
 
-    for (var d in definition)
+    for (var d in definition) {
         invariant(
-            allowed[d] || !(Reflux.PublisherMethods[d] || Reflux.ListenerMethods[d]),
-            "Cannot override API method `%s` in action creation. " +
-            "Use another method name or override it on Reflux.PublisherMethods / Reflux.ListenerMethods instead.",
+                allowed[d] || !(Reflux.PublisherMethods[d] || Reflux.ListenerMethods[d]),
+                "Cannot override API method `%s` in action creation. " +
+                "Use another method name or override it on Reflux.PublisherMethods / Reflux.ListenerMethods instead.",
             d
         );
+    }
 
     function Store() {
         this.subscriptions = [];

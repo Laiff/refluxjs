@@ -117,6 +117,7 @@ describe('Creating action', function() {
 
         describe('when adding shouldEmit hook',function(){
             var context = {
+                subscriptions: [],
                 validateListening:function(){},
                 fetchDefaultData:function(){}
             };

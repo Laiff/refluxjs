@@ -6,8 +6,9 @@ var createAction = require('./createAction');
  * @param actionNames the names for the actions to be created
  * @returns an object with actions of corresponding action names
  */
+/*jshint -W093 */
 exports.createActions = function (actionNames) {
     return actionNames.reduce(function (actions, name) {
-        return actions[name] = createAction() && actions
+        return actions[name] = createAction() && actions;
     }, {});
 };

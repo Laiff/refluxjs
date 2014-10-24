@@ -1,5 +1,4 @@
 var invariant = require('react/lib/invariant'),
-    mixInto = require('react/lib/mixInto'),
     mergeInto = require('react/lib/mergeInto'),
     _ = require('./utils'),
     Reflux = require('../src'),
@@ -28,6 +27,7 @@ module.exports = function (definition) {
     }
 
     var internal = {
+        sync: false,
         eventLabel: "action",
         emitter: new _.EventEmitter(),
         _isAction: true
@@ -42,9 +42,9 @@ module.exports = function (definition) {
         functor[functor.sync ? "trigger" : "triggerAsync"].apply(functor, arguments);
     };
 
-    mixInto(functor, context);
+    mergeInto(functor, context);
 
     Keep.createdActions.push(functor);
 
-    return functor
+    return functor;
 };
