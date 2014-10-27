@@ -3,8 +3,6 @@ var Reflux = require('../src'),
 
 module.exports = function (listenable, key) {
     return {
-        subscriptions: [],
-
         componentWillMount: function () {
             var me = this,
                 cb = (key === undefined ? this.setState : function (v) {
