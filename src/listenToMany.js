@@ -10,6 +10,8 @@ var Reflux = require('../src');
  */
 module.exports = function(listenables){
     return {
+        subscriptions: [],
+
         /**
          * Set up the mixin before the initial rendering occurs. Import methods from `ListenerMethods`
          * and then make the call to `listenTo` with the arguments provided to the factory function
