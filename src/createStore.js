@@ -4,7 +4,8 @@ var invariant = require('react/lib/invariant'),
     _ = require('./utils'),
     Reflux = require('../src'),
     Keep = require('./Keep'),
-    allowed = {preEmit:1,shouldEmit:1};
+    allowed = {preEmit:1,shouldEmit:1},
+    bindMethods = require('./bindMethods');
 
 /**
  * Creates an event emitting Data Store. It is mixed in with functions
@@ -47,6 +48,7 @@ module.exports = function(definition) {
     mixInto(Store, context);
 
     var store = new Store();
+    bindMethods(store, definition);
     Keep.createdStores.push(store);
 
     return store;
