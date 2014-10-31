@@ -9,8 +9,6 @@ module.exports = function (listenable, key) {
                     me.setState(_.object([key], [v]));
                 });
             this.listenTo(listenable, cb, cb);
-        },
-
-        componentWillUnmount: Reflux.ListenerMethods.componentWillUnmount
+        }
     };
 };

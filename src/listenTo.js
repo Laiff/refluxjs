@@ -19,10 +19,6 @@ module.exports = function (listenable, callback, initial) {
          */
         componentWillMount: function () {
             this.listenTo(listenable, callback, initial);
-        },
-        /**
-         * Cleans up all listener previously registered.
-         */
-        componentWillUnmount: Reflux.ListenerMethods.stopListeningToAll
+        }
     };
 };

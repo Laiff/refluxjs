@@ -16,10 +16,6 @@ module.exports = function(listenables){
          */
         componentWillMount: function() {
             this.listenToMany(listenables);
-        },
-        /**
-         * Cleans up all listener previously registered.
-         */
-        componentWillUnmount: Reflux.ListenerMethods.stopListeningToAll
+        }
     };
 };
