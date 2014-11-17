@@ -1,5 +1,7 @@
 exports.ListenerMethods = require('./ListenerMethods');
 exports.PublisherMethods = require('./PublisherMethods');
+
+exports.StoreMethods = require('./StoreMethods');
 exports.createAction = require('./createAction');
 exports.createActions = require('./createActions');
 exports.createStore = require('./createStore');
@@ -7,6 +9,7 @@ exports.connect = require('./connect');
 exports.ListenerMixin = require('./ListenerMixin');
 exports.listenTo = require('./listenTo');
 exports.listenToMany = require('./listenToMany');
+exports.ActionMethods = require('./ActionMethods');
 
 var maker = require('./joins').staticJoinCreator;
 exports.joinTrailing = exports.all = maker("last"); // Reflux.all alias for backward compatibility

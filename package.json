@@ -1,7 +1,15 @@
 {
   "name": "reflux",
-  "version": "0.1.21",
+  "version": "0.2.0",
   "description": "A simple library for uni-directional dataflow application architecture inspired by ReactJS Flux",
+  "files": [
+    "dist/*",
+    "src/*",
+    "package.json",
+    "README.md",
+    "LICENSE.md",
+    "CHANGELOG.md"
+  ],
   "main": "src/index.js",
   "scripts": {
     "test": "grunt test",
@@ -17,7 +25,7 @@
     "eventemitter3": "^0.1.5"
   },
   "peerDependencies": {
-    "react": "~0.11.2"
+    "react": ">= 0.11.2"
   },
   "devDependencies": {
     "benchmark": "^1.0.0",
@@ -41,6 +49,7 @@
     "karma-phantomjs-launcher": "^0.1.4",
     "karma-bro": "^0.8.0",
     "karma-spec-reporter": "0.0.13",
-    "karma-sauce-launcher": "^0.2.10"
+    "karma-sauce-launcher": "^0.2.10",
+    "react": ">= 0.11.2"
   }
 }

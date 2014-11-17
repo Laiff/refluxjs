@@ -1,6 +1,3 @@
-var Reflux = require('../src');
-
-
 /**
  * A mixin factory for a React component. Meant as a more convenient way of using the `ListenerMixin`,
  * without having to manually set listeners in the `componentWillMount` method.
