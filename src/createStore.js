@@ -1,6 +1,7 @@
 var invariant = require('react/lib/invariant'),
     mixInto = require('react/lib/mixInto'),
     mergeInto = require('react/lib/mergeInto'),
+    emptyFunction = require('react/lib/emptyFunction'),
     _ = require('./utils'),
     Reflux = require('../src'),
     Keep = require('./Keep'),
@@ -39,8 +40,8 @@ module.exports = function(definition) {
         this.subscriptions = [];
         this.emitter = new _.EventEmitter();
         this.eventLabel = "change";
-        if (this.init && _.isFunction(this.init)) {
-            this.init();
+        if (!this.init || !_.isFunction(this.init)) {
+            this.init = emptyFunction;
         }
         if (this.listenables){
             [].concat(this.listenables).forEach(this.listenToMany);
@@ -56,6 +57,7 @@ module.exports = function(definition) {
     mixInto(Store, context);
 
     var store = bindMethods(new Store(), definition);
+    store.init();
     Keep.createdStores.push(store);
 
     return store;
