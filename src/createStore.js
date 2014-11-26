@@ -55,8 +55,7 @@ module.exports = function(definition) {
 
     mixInto(Store, context);
 
-    var store = new Store();
-    bindMethods(store, definition);
+    var store = bindMethods(new Store(), definition);
     Keep.createdStores.push(store);
 
     return store;
