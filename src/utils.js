@@ -23,7 +23,7 @@ exports.nextTick = function(callback) {
 };
 
 exports.callbackName = function(string){
-    return "handle" + string.charAt(0).toUpperCase() + string.slice(1);
+    return "on" + string.charAt(0).toUpperCase() + string.slice(1);
 };
 
 exports.object = function(keys,vals){

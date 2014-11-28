@@ -1,4 +1,4 @@
-var mixInto = require('react/lib/mixInto'),
+var assign = require('react/lib/Object.assign'),
     chai = require('chai'),
     assert = chai.assert,
     Reflux = require('../src'),
@@ -190,7 +190,7 @@ describe('Composed listenable with stores', function() {
                     this.listenTo(storeAll, this.trigger);
                     this.listenTo(anotherAction);
                 };
-                mixInto(Component, Reflux.ListenerMixin);
+                assign(Component, Reflux.ListenerMixin);
             });
 
             it('should not crash', function() {

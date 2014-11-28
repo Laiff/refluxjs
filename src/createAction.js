@@ -1,7 +1,8 @@
 var invariant = require('react/lib/invariant'),
-    assign = require('react/lib/Object.assign'),
+    assign = require('xtend/mutable'),
     _ = require('./utils'),
-    Reflux = require('../src'),
+    ActionMethods = require('./ActionMethods'),
+    PublisherMethods = require('./PublisherMethods'),
     Keep = require('./Keep'),
     allowed = {preEmit: 1, shouldEmit: 1};
 
@@ -17,9 +18,9 @@ module.exports = function (definition) {
 
     definition = definition || {};
 
-    for(var a in Reflux.ActionMethods) {
+    for(var a in ActionMethods) {
         invariant(
-            allowed[a] || !Reflux.PublisherMethods[a],
+            allowed[a] || !PublisherMethods[a],
             "Cannot override API method `%s` in Reflux.ActionMethods. " +
             "Use another method name or override it on Reflux.PublisherMethods instead.",
             a
@@ -28,7 +29,7 @@ module.exports = function (definition) {
 
     for (var d in definition) {
         invariant(
-            allowed[d] || !Reflux.PublisherMethods[d],
+            allowed[d] || !PublisherMethods[d],
             "Cannot override API method `%s` in action creation. " +
             "Use another method name or override it on Reflux.PublisherMethods instead.",
             d
@@ -46,7 +47,7 @@ module.exports = function (definition) {
         functor[functor.sync ? "trigger" : "triggerAsync"].apply(functor, arguments);
     };
 
-    assign(functor, internal, Reflux.PublisherMethods, Reflux.ActionMethods, definition);
+    assign(functor, internal, PublisherMethods, ActionMethods, definition);
 
     Keep.createdActions.push(functor);
 

@@ -1,8 +1,10 @@
 var invariant = require('react/lib/invariant'),
-    assign = require('react/lib/Object.assign'),
+    assign = require('xtend/mutable'),
     emptyFunction = require('react/lib/emptyFunction'),
     _ = require('./utils'),
-    Reflux = require('../src'),
+    StoreMethods = require('./StoreMethods'),
+    PublisherMethods = require('./PublisherMethods'),
+    ListenerMethods = require('./ListenerMethods'),
     Keep = require('./Keep'),
     allowed = {preEmit:1,shouldEmit:1},
     bindMethods = require('./bindMethods');
@@ -19,9 +21,9 @@ module.exports = function(definition) {
 
     definition = definition || {};
 
-    for(var a in Reflux.StoreMethods) {
+    for(var a in StoreMethods) {
         invariant(
-            allowed[a] || !(Reflux.PublisherMethods[a] || Reflux.ListenerMethods[a]),
+            allowed[a] || !(PublisherMethods[a] || ListenerMethods[a]),
             "Cannot override API method `%s` in Reflux.StoreMethods. " +
             "Use another method name or override it on Reflux.PublisherMethods / Reflux.ListenerMethods instead.",
             a
@@ -30,7 +32,7 @@ module.exports = function(definition) {
 
     for (var d in definition) {
         invariant(
-            allowed[d] || !(Reflux.PublisherMethods[d] || Reflux.ListenerMethods[d]),
+            allowed[d] || !(PublisherMethods[d] || ListenerMethods[d]),
             "Cannot override API method `%s` in action creation. " +
             "Use another method name or override it on Reflux.PublisherMethods / Reflux.ListenerMethods instead.",
             d
@@ -49,7 +51,7 @@ module.exports = function(definition) {
         }
     }
 
-    assign(Store, Reflux.ListenerMethods, Reflux.PublisherMethods, Reflux.StoreMethods, definition);
+    assign(Store.prototype, ListenerMethods, PublisherMethods, StoreMethods, definition);
 
     var store = bindMethods(new Store(), definition);
     store.init();

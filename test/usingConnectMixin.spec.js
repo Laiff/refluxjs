@@ -16,7 +16,7 @@ describe('using the connect(...) mixin',function(){
                 listen: sinon.spy()
             },
             context = {setState: sinon.spy()};
-        _.extend(context,connect(listenable));
+        assign(context,connect(listenable));
 
         it("should pass empty object to state",function(){
             assert.deepEqual({},context.getInitialState());
@@ -30,7 +30,7 @@ describe('using the connect(...) mixin',function(){
                 getInitialState: sinon.stub().returns(initialstate)
             },
             context = {setState: sinon.spy()},
-            result = assign(context, connect(listenable));
+            result = assign(context, Reflux.ListenerMixin, connect(listenable));
 
         it("should add getInitialState and componentWillMount and WillUnmount",function(){
             assert.isFunction(context.getInitialState);
@@ -66,7 +66,7 @@ describe('using the connect(...) mixin',function(){
                 getInitialState: sinon.stub().returns(initialstate)
             },
             context = {setState: sinon.spy()},
-            result = assign(context, connect(listenable, key));
+            result = assign(context, Reflux.ListenerMixin, connect(listenable, key));
 
         it("should pass initial state to state correctly",function(){
             assert.deepEqual({KEY:initialstate},context.getInitialState());
@@ -90,7 +90,7 @@ describe('using the connect(...) mixin',function(){
             key = 0,
             listenable = {listen: sinon.spy()},
             context = {setState: sinon.spy()},
-            result = assign(context, connect(listenable, key));
+            result = assign(context, Reflux.ListenerMixin, connect(listenable, key));
         result.componentWillMount();
         it("should send listenable callback which calls setState correctly",function(){
             listenable.listen.firstCall.args[0](triggerdata);
@@ -100,7 +100,7 @@ describe('using the connect(...) mixin',function(){
     describe("together with ListenerMixin in a React component",function(){
         var store = Reflux.createStore({}),
             def = {setState:function(){}},
-            fakecomponent = _.extend(def,Reflux.connect(store),Reflux.ListenerMethods);
+            fakecomponent = assign(def,Reflux.ListenerMixin,Reflux.connect(store));
         it("should log a warning)",function(){
             sinon.spy(console,"warn");
             fakecomponent.componentWillMount();

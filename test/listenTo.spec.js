@@ -15,7 +15,7 @@ describe('the listenTo shorthand',function(){
             },
             initial = sinon.spy(),
             callback = "CALLBACK",
-            mixin = assign({}, Reflux.ListenerMethods, listenTo(listenable, "method", initial)),
+            mixin = assign({}, Reflux.ListenerMixin, listenTo(listenable, "method", initial)),
             result = assign({method: callback}, mixin);
 
         it("should return object with componentWillMount and componentWillUnmount methods",function(){

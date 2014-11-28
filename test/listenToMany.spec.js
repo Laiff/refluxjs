@@ -4,9 +4,9 @@ var assign = require('react/lib/Object.assign'),
     listenToMany = require('../src/listenToMany'),
     Reflux = require('../src');
 
-describe('the listenToMany shorthand',function(){
+describe('the listenToMany shorthand',function() {
 
-    describe("when calling the factory",function(){
+    describe("when calling the factory",function() {
         var unsubscriber = sinon.spy(),
             listenable1 = {listen: sinon.stub().returns(unsubscriber)},
             listenable2 = {listen: sinon.stub().returns(unsubscriber)},
@@ -18,7 +18,7 @@ describe('the listenToMany shorthand',function(){
                 onFirstAction: sinon.spy(),
                 onSecondAction: sinon.spy()
             },
-            result = assign(context, listenToMany(listenables));
+            result = assign(context, Reflux.ListenerMixin, listenToMany(listenables));
 
         it("should return object with componentWillMount and componentWillUnmount methods",function(){
             assert.isFunction(result.componentWillMount);

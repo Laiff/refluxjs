@@ -3,8 +3,7 @@
  */
 
 var slice = Array.prototype.slice,
-    _ = require("./utils"),
-    createStore = require("./createStore"),
+    invariant = require('react/lib/invariant'),
     strategyMethodNames = {
         strict: "joinStrict",
         first: "joinLeading",
@@ -20,8 +19,8 @@ var slice = Array.prototype.slice,
 exports.staticJoinCreator = function(strategy){
     return function(/* listenables... */) {
         var listenables = slice.call(arguments);
-        return createStore({
-            init: function(){
+        return require("./createStore")({
+            init: function() {
                 this[strategyMethodNames[strategy]].apply(this,listenables.concat("triggerAsync"));
             }
         });
@@ -35,7 +34,7 @@ exports.staticJoinCreator = function(strategy){
  */
 exports.instanceJoinCreator = function(strategy){
     return function(/* listenables..., callback*/){
-        _.throwIf(arguments.length < 3,'Cannot create a join with less than 2 listenables!');
+        invariant(arguments.length >= 3, 'Cannot create a join with less than 2 listenables!');
         var listenables = slice.call(arguments),
             callback = listenables.pop(),
             numberOfListenables = listenables.length,
@@ -46,7 +45,7 @@ exports.instanceJoinCreator = function(strategy){
                 strategy: strategy
             }, i, cancels = [], subobj;
         for (i = 0; i < numberOfListenables; i++) {
-            _.throwIf(this.validateListening(listenables[i]));
+            this.validateListening(listenables[i]);
         }
         for (i = 0; i < numberOfListenables; i++) {
             cancels.push(listenables[i].listen(newListener(i,join),this));
@@ -63,9 +62,9 @@ exports.instanceJoinCreator = function(strategy){
 
 function makeStopper(subobj,cancels,context){
     return function() {
-        var i, subs = context.subscriptions;
+        var i, subs = context.subscriptions,
             index = (subs ? subs.indexOf(subobj) : -1);
-        _.throwIf(index === -1,'Tried to remove join already gone from subscriptions list!');
+        invariant(index !== -1, 'Tried to remove join already gone from subscriptions list!');
         for(i=0;i < cancels.length; i++){
             cancels[i]();
         }
