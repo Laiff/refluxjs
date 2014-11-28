@@ -4,10 +4,7 @@ exports.ListenerMethods = require('./ListenerMethods');
 exports.PublisherMethods = require('./PublisherMethods');
 
 exports.StoreMethods = require('./StoreMethods');
-<<<<<<< HEAD
-=======
 
->>>>>>> spoike/master
 exports.createAction = require('./createAction');
 exports.createActions = require('./createActions');
 exports.createStore = require('./createStore');
@@ -48,16 +45,9 @@ exports.__keep = require('./Keep');
  * Warn if Function.prototype.bind not available
  */
 if (!Function.prototype.bind) {
-<<<<<<< HEAD
     console.error(
         'Function.prototype.bind not available. ' +
-        'ES5 shim required. '
+        'ES5 shim required. ' +
+        'https://github.com/spoike/refluxjs#es5'
     );
-=======
-  console.error(
-    'Function.prototype.bind not available. ' +
-    'ES5 shim required. ' +
-    'https://github.com/spoike/refluxjs#es5'
-  );
->>>>>>> spoike/master
 }

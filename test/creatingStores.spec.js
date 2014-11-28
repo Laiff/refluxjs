@@ -179,32 +179,19 @@ describe('Creating stores', function() {
             return assert.eventually.deepEqual(promise, ['[...] 1337', '[...] ninja']);
         });
 
-<<<<<<< HEAD
-        it('should get default data from getDefaultData()', function() {
-            var store = Reflux.createStore(merge(baseDefinition, {
-                getDefaultData: function () {
-                    return ['default data'];
-=======
         it('should get initial state from getInitialState()', function() {
             var store = Reflux.createStore(_.extend(baseDefinition, {
                 getInitialState: function () {
                     return ['initial state'];
->>>>>>> spoike/master
                 }
             }));
             var promise = createPromiseForTest(store);
             return assert.eventually.equal(promise, '[...] initial state');
         });
 
-<<<<<<< HEAD
-        it('should get default data from getDefaultData() returned promise', function() {
-            var store = Reflux.createStore(merge(baseDefinition, {
-                getDefaultData: function () {
-=======
         it('should get initial state from getInitialState() returned promise', function() {
             var store = Reflux.createStore(_.extend(baseDefinition, {
                 getInitialState: function () {
->>>>>>> spoike/master
                     return Q.Promise(function (resolve) {
                         setTimeout(function () {
                             resolve(['initial state']);

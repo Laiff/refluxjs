@@ -21,25 +21,14 @@ module.exports = function(definition) {
     definition = definition || {};
 
     for(var a in Reflux.StoreMethods){
-        if (!allowed[a] && (Reflux.PublisherMethods[a] || Reflux.ListenerMethods[a])){
-<<<<<<< HEAD
-            throw new Error("Cannot override API method " + a +
-                " in Reflux.StoreMethods. Use another method name or override it on Reflux.PublisherMethods / Reflux.ListenerMethods instead."
-=======
-            throw new Error("Cannot override API method " + a + 
-                " in Reflux.StoreMethods. Use another method name or override it on Reflux.PublisherMethods / Reflux.ListenerMethods instead."
-            );
-        }
+        invariant(
+            allowed[a] || !(Reflux.PublisherMethods[a] || Reflux.ListenerMethods[a]),
+            "Cannot override API method `%s` in Reflux.StoreMethods. " +
+            "Use another method name or override it on Reflux.PublisherMethods / Reflux.ListenerMethods instead.",
+            a
+        );
     }
 
-    for(var d in definition){
-        if (!allowed[d] && (Reflux.PublisherMethods[d] || Reflux.ListenerMethods[d])){
-            throw new Error("Cannot override API method " + d + 
-                " in store creation. Use another method name or override it on Reflux.PublisherMethods / Reflux.ListenerMethods instead."
->>>>>>> spoike/master
-            );
-        }
-    }
     for (var d in definition) {
         invariant(
                 allowed[d] || !(Reflux.PublisherMethods[d] || Reflux.ListenerMethods[d]),
@@ -61,7 +50,6 @@ module.exports = function(definition) {
         }
     }
 
-<<<<<<< HEAD
     var context = {};
     mergeInto(context, Reflux.ListenerMethods);
     mergeInto(context, Reflux.PublisherMethods);
@@ -72,12 +60,6 @@ module.exports = function(definition) {
 
     var store = bindMethods(new Store(), definition);
     store.init();
-=======
-    _.extend(Store.prototype, Reflux.ListenerMethods, Reflux.PublisherMethods, Reflux.StoreMethods, definition);
-
-    var store = new Store();
-    bindMethods(store, definition);
->>>>>>> spoike/master
     Keep.createdStores.push(store);
 
     return store;

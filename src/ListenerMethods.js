@@ -13,25 +13,15 @@ module.exports = {
      * @param {Action|Store} listenable The listenable we want to search for
      * @returns {Boolean} The result of a recursive search among `this.subscriptions`
      */
-<<<<<<< HEAD
-    hasListener: function (listenable) {
-        var i = 0,
-            listener;
-        for (; i < (this.subscriptions || []).length; ++i) {
-            listener = this.subscriptions[i].listenable;
-            if (listener === listenable || listener.hasListener && listener.hasListener(listenable)) {
-                return true;
-=======
     hasListener: function(listenable) {
         var i = 0, j, listener, listenables;
         for (;i < (this.subscriptions||[]).length; ++i) {
             listenables = [].concat(this.subscriptions[i].listenable);
-            for (j = 0; j < listenables.length; j++){
+            for (j = 0; j < listenables.length; j++) {
                 listener = listenables[j];
                 if (listener === listenable || listener.hasListener && listener.hasListener(listenable)) {
                     return true;
                 }
->>>>>>> spoike/master
             }
         }
         return false;
@@ -85,26 +75,15 @@ module.exports = {
      * @param {Function|String} defaultCallback The callback to register as default handler
      * @returns {Object} A subscription obj where `stop` is an unsub function and `listenable` is the object being listened to
      */
-<<<<<<< HEAD
     listenTo: function (listenable, callback, defaultCallback) {
         var deSub, unsubscriber, subscriptionObj,
             subs = this.subscriptions = this.subscriptions || [];
         this.validateListening(listenable);
-        this.fetchDefaultData(listenable, defaultCallback);
+        this.fetchInitialState(listenable, defaultCallback);
         deSub = listenable.listen(this[callback] || callback, this);
         unsubscriber = function () {
             var index = subs.indexOf(subscriptionObj);
             invariant(index !== -1, 'Tried to remove listen already gone from subscriptions list!');
-=======
-    listenTo: function(listenable, callback, defaultCallback) {
-        var desub, unsubscriber, subscriptionobj, subs = this.subscriptions = this.subscriptions || [];
-        _.throwIf(this.validateListening(listenable));
-        this.fetchInitialState(listenable, defaultCallback);
-        desub = listenable.listen(this[callback]||callback, this);
-        unsubscriber = function() {
-            var index = subs.indexOf(subscriptionobj);
-            _.throwIf(index === -1,'Tried to remove listen already gone from subscriptions list!');
->>>>>>> spoike/master
             subs.splice(index, 1);
             deSub();
         };
@@ -153,13 +132,8 @@ module.exports = {
     fetchInitialState: function (listenable, defaultCallback) {
         defaultCallback = (defaultCallback && this[defaultCallback]) || defaultCallback;
         var me = this;
-<<<<<<< HEAD
-        if (_.isFunction(defaultCallback) && _.isFunction(listenable.getDefaultData)) {
-            var data = listenable.getDefaultData();
-=======
         if (_.isFunction(defaultCallback) && _.isFunction(listenable.getInitialState)) {
-            data = listenable.getInitialState();
->>>>>>> spoike/master
+            var data = listenable.getInitialState();
             if (data && _.isFunction(data.then)) {
                 data.then(function () {
                     defaultCallback.apply(me, arguments);

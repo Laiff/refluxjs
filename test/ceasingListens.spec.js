@@ -2,15 +2,6 @@ var assert = require('chai').assert,
     Reflux = require('../src'),
     Action = Reflux.createAction,
     Store = Reflux.createStore,
-<<<<<<< HEAD
-    fn = function () {
-    };
-
-describe('Stopping', function () {
-    describe('a single listen', function () {
-        describe('by calling stop directly', function () {
-            describe('when all is well', function () {
-=======
     fn = function(){},
     sinon = require('sinon');
 
@@ -55,7 +46,6 @@ describe('Stopping',function(){
     describe('a single listen', function(){
         describe('by calling stop directly',function(){
             describe('when all is well',function(){
->>>>>>> spoike/master
                 var store = Store(),
                     action1 = Action(),
                     action3 = Action();
