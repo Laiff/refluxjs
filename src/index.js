@@ -49,3 +49,5 @@ if (!Function.prototype.bind) {
         'https://github.com/spoike/refluxjs#es5'
     );
 }
+
+require('es6-symbol');
