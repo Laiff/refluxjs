@@ -18,8 +18,9 @@ exports.isArguments = function (value) {
 
 exports.EventEmitter = require('eventemitter3');
 
+require('setimmediate2');
 exports.nextTick = function(callback) {
-    setTimeout(callback, 0);
+    setImmediate(callback);
 };
 
 exports.callbackName = function(string){
