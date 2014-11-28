@@ -23,7 +23,8 @@
   },
   "dependencies": {
     "eventemitter3": "^0.1.5",
-    "xtend": "~4.0.0"
+    "xtend": "~4.0.0",
+    "setimmediate2": "~1.1.4"
   },
   "peerDependencies": {
     "react": ">= 0.12.1"
