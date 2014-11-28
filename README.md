@@ -70,6 +70,10 @@ The following command installs reflux as a bower component that can be used in t
 
     bower install reflux
 
+### ES5
+
+Like React, Reflux depends on an es5-shim for older browsers. The es5-shim.js from [kriskowal's es5-shim](https://github.com/kriskowal/es5-shim) provides everything required.
+
 ## Usage
 
 For a full example check the [`test/index.js`](test/index.js) file.
@@ -478,14 +482,14 @@ Since it is rather common to have a store where the only purpose is to listen to
 var gainHeroBadgeStore = Reflux.joinTrailing(actions.disarmBomb, actions.saveHostage, actions.recoverData);
 ```
 
-### Sending default data with the listenTo function
+### Sending initial state with the listenTo function
 
-The `listenTo` function provided by the `Store` and the `ListenerMixin` has a third parameter that accepts a callback. This callback will be invoked when the listener is registered with whatever the `getDefaultData` is returning.
+The `listenTo` function provided by the `Store` and the `ListenerMixin` has a third parameter that accepts a callback. This callback will be invoked when the listener is registered with whatever the `getInitialState` is returning.
 
 ```javascript
 var exampleStore = Reflux.createStore({
     init: function() {},
-    getDefaultData: function() {
+    getInitialState: function() {
         return "the initial data";
     }
 });
@@ -496,7 +500,7 @@ this.listenTo(exampleStore, onChangeCallback, initialCallback)
 // initialCallback will be invoked immediately with "the initial data" as first argument
 ```
 
-Remember the `listenToMany` method? In case you use that with other stores, it supports `getDefaultData`. That data is sent to the normal listening callback, or a `this.on<Listenablename>Default` method if that exists.
+Remember the `listenToMany` method? In case you use that with other stores, it supports `getInitialState`. That data is sent to the normal listening callback, or a `this.on<Listenablename>Default` method if that exists.
 
 ## Colophon
 
