@@ -1,7 +1,10 @@
+exports.ActionMethods = require('./ActionMethods');
+
 exports.ListenerMethods = require('./ListenerMethods');
 exports.PublisherMethods = require('./PublisherMethods');
 
 exports.StoreMethods = require('./StoreMethods');
+
 exports.createAction = require('./createAction');
 exports.createActions = require('./createActions');
 exports.createStore = require('./createStore');
@@ -44,6 +47,7 @@ exports.__keep = require('./Keep');
 if (!Function.prototype.bind) {
     console.error(
         'Function.prototype.bind not available. ' +
-        'ES5 shim required. '
+        'ES5 shim required. ' +
+        'https://github.com/spoike/refluxjs#es5'
     );
 }

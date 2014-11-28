@@ -205,6 +205,14 @@ if ('object' === typeof module && module.exports) {
 }
 
 },{}],2:[function(_dereq_,module,exports){
+/**
+ * A module of methods that you want to include in all actions.
+ * This module is consumed by `createAction`.
+ */
+module.exports = {
+};
+
+},{}],3:[function(_dereq_,module,exports){
 exports.createdStores = [];
 
 exports.createdActions = [];
@@ -218,7 +226,7 @@ exports.reset = function() {
     }
 };
 
-},{}],3:[function(_dereq_,module,exports){
+},{}],4:[function(_dereq_,module,exports){
 var _ = _dereq_('./utils'),
     maker = _dereq_('./joins').instanceJoinCreator;
 
@@ -234,12 +242,14 @@ module.exports = {
      * @returns {Boolean} The result of a recursive search among `this.subscriptions`
      */
     hasListener: function(listenable) {
-        var i = 0,
-            listener;
+        var i = 0, j, listener, listenables;
         for (;i < (this.subscriptions||[]).length; ++i) {
-            listener = this.subscriptions[i].listenable;
-            if (listener === listenable || listener.hasListener && listener.hasListener(listenable)) {
-                return true;
+            listenables = [].concat(this.subscriptions[i].listenable);
+            for (j = 0; j < listenables.length; j++){
+                listener = listenables[j];
+                if (listener === listenable || listener.hasListener && listener.hasListener(listenable)) {
+                    return true;
+                }
             }
         }
         return false;
@@ -291,7 +301,7 @@ module.exports = {
     listenTo: function(listenable, callback, defaultCallback) {
         var desub, unsubscriber, subscriptionobj, subs = this.subscriptions = this.subscriptions || [];
         _.throwIf(this.validateListening(listenable));
-        this.fetchDefaultData(listenable, defaultCallback);
+        this.fetchInitialState(listenable, defaultCallback);
         desub = listenable.listen(this[callback]||callback, this);
         unsubscriber = function() {
             var index = subs.indexOf(subscriptionobj);
@@ -338,15 +348,15 @@ module.exports = {
     },
 
     /**
-     * Used in `listenTo`. Fetches initial data from a publisher if it has a `getDefaultData` method.
-     * @param {Action|Store} listenable The publisher we want to get default data from
+     * Used in `listenTo`. Fetches initial data from a publisher if it has a `getInitialState` method.
+     * @param {Action|Store} listenable The publisher we want to get initial state from
      * @param {Function|String} defaultCallback The method to receive the data
      */
-    fetchDefaultData: function (listenable, defaultCallback) {
+    fetchInitialState: function (listenable, defaultCallback) {
         defaultCallback = (defaultCallback && this[defaultCallback]) || defaultCallback;
         var me = this;
-        if (_.isFunction(defaultCallback) && _.isFunction(listenable.getDefaultData)) {
-            data = listenable.getDefaultData();
+        if (_.isFunction(defaultCallback) && _.isFunction(listenable.getInitialState)) {
+            data = listenable.getInitialState();
             if (data && _.isFunction(data.then)) {
                 data.then(function() {
                     defaultCallback.apply(me, arguments);
@@ -362,6 +372,7 @@ module.exports = {
      * It will be invoked with the last emission from each listenable.
      * @param {...Publishers} publishers Publishers that should be tracked.
      * @param {Function|String} callback The method to call when all publishers have emitted
+     * @returns {Object} A subscription obj where `stop` is an unsub function and `listenable` is an array of listenables
      */
     joinTrailing: maker("last"),
 
@@ -370,6 +381,7 @@ module.exports = {
      * It will be invoked with the first emission from each listenable.
      * @param {...Publishers} publishers Publishers that should be tracked.
      * @param {Function|String} callback The method to call when all publishers have emitted
+     * @returns {Object} A subscription obj where `stop` is an unsub function and `listenable` is an array of listenables
      */
     joinLeading: maker("first"),
 
@@ -378,6 +390,7 @@ module.exports = {
      * It will be invoked with all emission from each listenable.
      * @param {...Publishers} publishers Publishers that should be tracked.
      * @param {Function|String} callback The method to call when all publishers have emitted
+     * @returns {Object} A subscription obj where `stop` is an unsub function and `listenable` is an array of listenables
      */
     joinConcat: maker("all"),
 
@@ -386,18 +399,20 @@ module.exports = {
      * If a callback triggers twice before that happens, an error is thrown.
      * @param {...Publishers} publishers Publishers that should be tracked.
      * @param {Function|String} callback The method to call when all publishers have emitted
+     * @returns {Object} A subscription obj where `stop` is an unsub function and `listenable` is an array of listenables
      */
     joinStrict: maker("strict"),
 };
 
-
-},{"./joins":10,"./utils":13}],4:[function(_dereq_,module,exports){
+},{"./joins":13,"./utils":16}],5:[function(_dereq_,module,exports){
 var _ = _dereq_('./utils'),
     ListenerMethods = _dereq_('./ListenerMethods');
 
 /**
  * A module meant to be consumed as a mixin by a React component. Supplies the methods from
  * `ListenerMethods` mixin and takes care of teardown of subscriptions.
+ * Note that if you're using the `connect` mixin you don't need this mixin, as connect will
+ * import everything this mixin contains!
  */
 module.exports = _.extend({
 
@@ -408,7 +423,7 @@ module.exports = _.extend({
 
 }, ListenerMethods);
 
-},{"./ListenerMethods":3,"./utils":13}],5:[function(_dereq_,module,exports){
+},{"./ListenerMethods":4,"./utils":16}],6:[function(_dereq_,module,exports){
 var _ = _dereq_('./utils');
 
 /**
@@ -475,29 +490,66 @@ module.exports = {
     }
 };
 
-},{"./utils":13}],6:[function(_dereq_,module,exports){
+},{"./utils":16}],7:[function(_dereq_,module,exports){
+/**
+ * A module of methods that you want to include in all stores.
+ * This module is consumed by `createStore`.
+ */
+module.exports = {
+};
+
+},{}],8:[function(_dereq_,module,exports){
+module.exports = function(store, definition) {
+  for (var name in definition) {
+    var property = definition[name];
+
+    if (typeof property !== 'function' || !definition.hasOwnProperty(name)) {
+      continue;
+    }
+
+    store[name] = property.bind(store);
+  }
+
+  return store;
+};
+
+},{}],9:[function(_dereq_,module,exports){
 var Reflux = _dereq_('../src'),
     _ = _dereq_('./utils');
 
 module.exports = function(listenable,key){
     return {
+        getInitialState: function(){
+            if (!_.isFunction(listenable.getInitialState)) {
+                return {};
+            } else if (key === undefined) {
+                return listenable.getInitialState();
+            } else {
+                return _.object([key],[listenable.getInitialState()]);
+            }
+        },
         componentDidMount: function(){
+            var warned = false;
             for(var m in Reflux.ListenerMethods){
-                if (this[m] !== Reflux.ListenerMethods[m]){
-                    if (this[m]){
-                        throw "Can't have other property '"+m+"' when using Reflux.listenTo!";
-                    }
-                    this[m] = Reflux.ListenerMethods[m];
+                if (this[m] && typeof console && typeof console.warn === "function" && !warned ){
+                    console.warn(
+                        "Component using Reflux.connect already had property '"+m+"'. "+
+                        "Either you had your own property with that name which was now overridden, "+
+                        "or you combined connect with ListenerMixin which is unnecessary as connect "+
+                        "will include the ListenerMixin methods automatically."
+                    );
+                    warned = true;
                 }
+                this[m] = Reflux.ListenerMethods[m];
             }
             var me = this, cb = (key === undefined ? this.setState : function(v){me.setState(_.object([key],[v]));});
-            this.listenTo(listenable,cb,cb);
+            this.listenTo(listenable,cb);
         },
         componentWillUnmount: Reflux.ListenerMixin.componentWillUnmount
     };
 };
 
-},{"../src":9,"./utils":13}],7:[function(_dereq_,module,exports){
+},{"../src":12,"./utils":16}],10:[function(_dereq_,module,exports){
 var _ = _dereq_('./utils'),
     Reflux = _dereq_('../src'),
     Keep = _dereq_('./Keep'),
@@ -514,6 +566,14 @@ module.exports = function(definition) {
 
     definition = definition || {};
 
+    for(var a in Reflux.ActionMethods){
+        if (!allowed[a] && Reflux.PublisherMethods[a]) {
+            throw new Error("Cannot override API method " + a +
+                " in Reflux.ActionMethods. Use another method name or override it on Reflux.PublisherMethods instead."
+            );
+        }
+    }
+
     for(var d in definition){
         if (!allowed[d] && Reflux.PublisherMethods[d]) {
             throw new Error("Cannot override API method " + d +
@@ -526,7 +586,7 @@ module.exports = function(definition) {
         eventLabel: "action",
         emitter: new _.EventEmitter(),
         _isAction: true
-    },Reflux.PublisherMethods,definition);
+    }, Reflux.PublisherMethods, Reflux.ActionMethods, definition);
 
     var functor = function() {
         functor[functor.sync?"trigger":"triggerAsync"].apply(functor, arguments);
@@ -540,11 +600,12 @@ module.exports = function(definition) {
 
 };
 
-},{"../src":9,"./Keep":2,"./utils":13}],8:[function(_dereq_,module,exports){
+},{"../src":12,"./Keep":3,"./utils":16}],11:[function(_dereq_,module,exports){
 var _ = _dereq_('./utils'),
     Reflux = _dereq_('../src'),
     Keep = _dereq_('./Keep'),
-    allowed = {preEmit:1,shouldEmit:1};
+    allowed = {preEmit:1,shouldEmit:1},
+    bindMethods = _dereq_('./bindMethods');
 
 /**
  * Creates an event emitting Data Store. It is mixed in with functions
@@ -557,6 +618,14 @@ var _ = _dereq_('./utils'),
 module.exports = function(definition) {
 
     definition = definition || {};
+
+    for(var a in Reflux.StoreMethods){
+        if (!allowed[a] && (Reflux.PublisherMethods[a] || Reflux.ListenerMethods[a])){
+            throw new Error("Cannot override API method " + a + 
+                " in Reflux.StoreMethods. Use another method name or override it on Reflux.PublisherMethods / Reflux.ListenerMethods instead."
+            );
+        }
+    }
 
     for(var d in definition){
         if (!allowed[d] && (Reflux.PublisherMethods[d] || Reflux.ListenerMethods[d])){
@@ -582,18 +651,23 @@ module.exports = function(definition) {
         }
     }
 
-    _.extend(Store.prototype, Reflux.ListenerMethods, Reflux.PublisherMethods, definition);
+    _.extend(Store.prototype, Reflux.ListenerMethods, Reflux.PublisherMethods, Reflux.StoreMethods, definition);
 
     var store = new Store();
+    bindMethods(store, definition);
     Keep.createdStores.push(store);
 
     return store;
 };
 
-},{"../src":9,"./Keep":2,"./utils":13}],9:[function(_dereq_,module,exports){
+},{"../src":12,"./Keep":3,"./bindMethods":8,"./utils":16}],12:[function(_dereq_,module,exports){
+exports.ActionMethods = _dereq_('./ActionMethods');
+
 exports.ListenerMethods = _dereq_('./ListenerMethods');
 
 exports.PublisherMethods = _dereq_('./PublisherMethods');
+
+exports.StoreMethods = _dereq_('./StoreMethods');
 
 exports.createAction = _dereq_('./createAction');
 
@@ -654,12 +728,24 @@ exports.nextTick = function(nextTick) {
  */
 exports.__keep = _dereq_('./Keep');
 
-},{"./Keep":2,"./ListenerMethods":3,"./ListenerMixin":4,"./PublisherMethods":5,"./connect":6,"./createAction":7,"./createStore":8,"./joins":10,"./listenTo":11,"./listenToMany":12,"./utils":13}],10:[function(_dereq_,module,exports){
+/**
+ * Warn if Function.prototype.bind not available
+ */
+if (!Function.prototype.bind) {
+  console.error(
+    'Function.prototype.bind not available. ' +
+    'ES5 shim required. ' +
+    'https://github.com/spoike/refluxjs#es5'
+  );
+}
+
+},{"./ActionMethods":2,"./Keep":3,"./ListenerMethods":4,"./ListenerMixin":5,"./PublisherMethods":6,"./StoreMethods":7,"./connect":9,"./createAction":10,"./createStore":11,"./joins":13,"./listenTo":14,"./listenToMany":15,"./utils":16}],13:[function(_dereq_,module,exports){
 /**
  * Internal module used to create static and instance join methods
  */
 
 var slice = Array.prototype.slice,
+    _ = _dereq_("./utils"),
     createStore = _dereq_("./createStore"),
     strategyMethodNames = {
         strict: "joinStrict",
@@ -691,6 +777,7 @@ exports.staticJoinCreator = function(strategy){
  */
 exports.instanceJoinCreator = function(strategy){
     return function(/* listenables..., callback*/){
+        _.throwIf(arguments.length < 3,'Cannot create a join with less than 2 listenables!');
         var listenables = slice.call(arguments),
             callback = listenables.pop(),
             numberOfListenables = listenables.length,
@@ -699,15 +786,34 @@ exports.instanceJoinCreator = function(strategy){
                 callback: this[callback]||callback,
                 listener: this,
                 strategy: strategy
-            };
-        for (var i = 0; i < numberOfListenables; i++) {
-            this.listenTo(listenables[i],newListener(i,join));
+            }, i, cancels = [], subobj;
+        for (i = 0; i < numberOfListenables; i++) {
+            _.throwIf(this.validateListening(listenables[i]));
+        }
+        for (i = 0; i < numberOfListenables; i++) {
+            cancels.push(listenables[i].listen(newListener(i,join),this));
         }
         reset(join);
+        subobj = {listenable: listenables};
+        subobj.stop = makeStopper(subobj,cancels,this);
+        this.subscriptions = (this.subscriptions || []).concat(subobj);
+        return subobj;
     };
 };
 
 // ---- internal join functions ----
+
+function makeStopper(subobj,cancels,context){
+    return function() {
+        var i, subs = context.subscriptions;
+            index = (subs ? subs.indexOf(subobj) : -1);
+        _.throwIf(index === -1,'Tried to remove join already gone from subscriptions list!');
+        for(i=0;i < cancels.length; i++){
+            cancels[i]();
+        }
+        subs.splice(index, 1);
+    };
+}
 
 function reset(join) {
     join.listenablesEmitted = new Array(join.numberOfListenables);
@@ -741,7 +847,7 @@ function emitIfAllListenablesEmitted(join) {
     reset(join);
 }
 
-},{"./createStore":8}],11:[function(_dereq_,module,exports){
+},{"./createStore":11,"./utils":16}],14:[function(_dereq_,module,exports){
 var Reflux = _dereq_('../src');
 
 
@@ -779,7 +885,7 @@ module.exports = function(listenable,callback,initial){
     };
 };
 
-},{"../src":9}],12:[function(_dereq_,module,exports){
+},{"../src":12}],15:[function(_dereq_,module,exports){
 var Reflux = _dereq_('../src');
 
 /**
@@ -814,7 +920,7 @@ module.exports = function(listenables){
     };
 };
 
-},{"../src":9}],13:[function(_dereq_,module,exports){
+},{"../src":12}],16:[function(_dereq_,module,exports){
 /*
  * isObject, extend, isFunction, isArguments are taken from undescore/lodash in
  * order to remove the dependency
@@ -871,6 +977,6 @@ exports.throwIf = function(val,msg){
     }
 };
 
-},{"eventemitter3":1}]},{},[9])
-(9)
+},{"eventemitter3":1}]},{},[12])
+(12)
 });

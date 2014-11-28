@@ -141,7 +141,7 @@ describe('Creating action', function() {
             var context = {
                 subscriptions: [],
                 validateListening:function(){},
-                fetchDefaultData:function(){}
+                fetchInitialState:function(){}
             };
 
             describe("when hook returns true",function(){

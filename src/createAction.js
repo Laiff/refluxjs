@@ -17,13 +17,15 @@ module.exports = function (definition) {
 
     definition = definition || {};
 
-    for(var a in Reflux.ActionMethods){
-        if (!allowed[a] && Reflux.PublisherMethods[a]) {
-            throw new Error("Cannot override API method " + a +
-                " in Reflux.ActionMethods. Use another method name or override it on Reflux.PublisherMethods instead."
-            );
-        }
+    for(var a in Reflux.ActionMethods) {
+        invariant(
+            allowed[a] || !Reflux.PublisherMethods[a],
+            "Cannot override API method `%s` in Reflux.ActionMethods. " +
+            "Use another method name or override it on Reflux.PublisherMethods instead.",
+            a
+        );
     }
+
     for (var d in definition) {
         invariant(
             allowed[d] || !Reflux.PublisherMethods[d],

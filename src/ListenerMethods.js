@@ -13,13 +13,15 @@ module.exports = {
      * @param {Action|Store} listenable The listenable we want to search for
      * @returns {Boolean} The result of a recursive search among `this.subscriptions`
      */
-    hasListener: function (listenable) {
-        var i = 0,
-            listener;
-        for (; i < (this.subscriptions || []).length; ++i) {
-            listener = this.subscriptions[i].listenable;
-            if (listener === listenable || listener.hasListener && listener.hasListener(listenable)) {
-                return true;
+    hasListener: function(listenable) {
+        var i = 0, j, listener, listenables;
+        for (;i < (this.subscriptions||[]).length; ++i) {
+            listenables = [].concat(this.subscriptions[i].listenable);
+            for (j = 0; j < listenables.length; j++) {
+                listener = listenables[j];
+                if (listener === listenable || listener.hasListener && listener.hasListener(listenable)) {
+                    return true;
+                }
             }
         }
         return false;
@@ -77,7 +79,7 @@ module.exports = {
         var deSub, unsubscriber, subscriptionObj,
             subs = this.subscriptions = this.subscriptions || [];
         this.validateListening(listenable);
-        this.fetchDefaultData(listenable, defaultCallback);
+        this.fetchInitialState(listenable, defaultCallback);
         deSub = listenable.listen(this[callback] || callback, this);
         unsubscriber = function () {
             var index = subs.indexOf(subscriptionObj);
@@ -123,15 +125,15 @@ module.exports = {
     },
 
     /**
-     * Used in `listenTo`. Fetches initial data from a publisher if it has a `getDefaultData` method.
-     * @param {Action|Store} listenable The publisher we want to get default data from
+     * Used in `listenTo`. Fetches initial data from a publisher if it has a `getInitialState` method.
+     * @param {Action|Store} listenable The publisher we want to get initial state from
      * @param {Function|String} defaultCallback The method to receive the data
      */
-    fetchDefaultData: function (listenable, defaultCallback) {
+    fetchInitialState: function (listenable, defaultCallback) {
         defaultCallback = (defaultCallback && this[defaultCallback]) || defaultCallback;
         var me = this;
-        if (_.isFunction(defaultCallback) && _.isFunction(listenable.getDefaultData)) {
-            var data = listenable.getDefaultData();
+        if (_.isFunction(defaultCallback) && _.isFunction(listenable.getInitialState)) {
+            var data = listenable.getInitialState();
             if (data && _.isFunction(data.then)) {
                 data.then(function () {
                     defaultCallback.apply(me, arguments);
@@ -147,6 +149,7 @@ module.exports = {
      * It will be invoked with the last emission from each listenable.
      * @param {...Publishers} publishers Publishers that should be tracked.
      * @param {Function|String} callback The method to call when all publishers have emitted
+     * @returns {Object} A subscription obj where `stop` is an unsub function and `listenable` is an array of listenables
      */
     joinTrailing: maker("last"),
 
@@ -155,6 +158,7 @@ module.exports = {
      * It will be invoked with the first emission from each listenable.
      * @param {...Publishers} publishers Publishers that should be tracked.
      * @param {Function|String} callback The method to call when all publishers have emitted
+     * @returns {Object} A subscription obj where `stop` is an unsub function and `listenable` is an array of listenables
      */
     joinLeading: maker("first"),
 
@@ -163,6 +167,7 @@ module.exports = {
      * It will be invoked with all emission from each listenable.
      * @param {...Publishers} publishers Publishers that should be tracked.
      * @param {Function|String} callback The method to call when all publishers have emitted
+     * @returns {Object} A subscription obj where `stop` is an unsub function and `listenable` is an array of listenables
      */
     joinConcat: maker("all"),
 
@@ -171,7 +176,7 @@ module.exports = {
      * If a callback triggers twice before that happens, an error is thrown.
      * @param {...Publishers} publishers Publishers that should be tracked.
      * @param {Function|String} callback The method to call when all publishers have emitted
+     * @returns {Object} A subscription obj where `stop` is an unsub function and `listenable` is an array of listenables
      */
     joinStrict: maker("strict")
 };
-
