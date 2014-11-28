@@ -1,5 +1,3 @@
-var Reflux = require('../src');
-
 /**
  * A mixin factory for a React component. Meant as a more convenient way of using the `listenerMixin`,
  * without having to manually set listeners in the `componentWillMount` method. This version is used
@@ -16,10 +14,6 @@ module.exports = function(listenables){
          */
         componentWillMount: function() {
             this.listenToMany(listenables);
-        },
-        /**
-         * Cleans up all listener previously registered.
-         */
-        componentWillUnmount: Reflux.ListenerMethods.stopListeningToAll
+        }
     };
 };

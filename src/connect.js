@@ -1,5 +1,4 @@
-var Reflux = require('../src'),
-    _ = require('./utils');
+var _ = require('./utils');
 
 module.exports = function (listenable, key) {
     return {
@@ -9,8 +8,6 @@ module.exports = function (listenable, key) {
                     me.setState(_.object([key], [v]));
                 });
             this.listenTo(listenable, cb, cb);
-        },
-
-        componentWillUnmount: Reflux.ListenerMethods.componentWillUnmount
+        }
     };
 };

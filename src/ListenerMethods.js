@@ -75,7 +75,7 @@ module.exports = {
      */
     listenTo: function (listenable, callback, defaultCallback) {
         var deSub, unsubscriber, subscriptionObj,
-            subs = this.subscriptions;
+            subs = this.subscriptions = this.subscriptions || [];
         this.validateListening(listenable);
         this.fetchDefaultData(listenable, defaultCallback);
         deSub = listenable.listen(this[callback] || callback, this);
