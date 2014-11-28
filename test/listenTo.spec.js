@@ -1,4 +1,4 @@
-var merge = require('react/lib/merge'),
+var assign = require('react/lib/Object.assign'),
     assert = require('chai').assert,
     sinon = require('sinon'),
     listenTo = require('../src/listenTo'),
@@ -15,8 +15,8 @@ describe('the listenTo shorthand',function(){
             },
             initial = sinon.spy(),
             callback = "CALLBACK",
-            mixin = merge(Reflux.ListenerMethods, listenTo(listenable, "method", initial)),
-            result = merge({method: callback}, mixin);
+            mixin = assign({}, Reflux.ListenerMethods, listenTo(listenable, "method", initial)),
+            result = assign({method: callback}, mixin);
 
         it("should return object with componentWillMount and componentWillUnmount methods",function(){
             assert.isFunction(result.componentWillMount);

@@ -1,4 +1,4 @@
-var merge = require('react/lib/merge'),
+var assign = require('react/lib/Object.assign'),
     assert = require('chai').assert,
     sinon = require('sinon'),
     connect = require('../src/connect'),
@@ -30,7 +30,7 @@ describe('using the connect(...) mixin',function(){
                 getInitialState: sinon.stub().returns(initialstate)
             },
             context = {setState: sinon.spy()},
-            result = merge(context, connect(listenable));
+            result = assign(context, connect(listenable));
 
         it("should add getInitialState and componentWillMount and WillUnmount",function(){
             assert.isFunction(context.getInitialState);
@@ -66,7 +66,7 @@ describe('using the connect(...) mixin',function(){
                 getInitialState: sinon.stub().returns(initialstate)
             },
             context = {setState: sinon.spy()},
-            result = merge(context, connect(listenable, key));
+            result = assign(context, connect(listenable, key));
 
         it("should pass initial state to state correctly",function(){
             assert.deepEqual({KEY:initialstate},context.getInitialState());
@@ -90,7 +90,7 @@ describe('using the connect(...) mixin',function(){
             key = 0,
             listenable = {listen: sinon.spy()},
             context = {setState: sinon.spy()},
-            result = merge(context, connect(listenable, key));
+            result = assign(context, connect(listenable, key));
         result.componentWillMount();
         it("should send listenable callback which calls setState correctly",function(){
             listenable.listen.firstCall.args[0](triggerdata);

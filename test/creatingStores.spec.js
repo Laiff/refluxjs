@@ -1,5 +1,4 @@
-var merge = require('react/lib/merge'),
-    chai = require('chai'),
+var chai = require('chai'),
     assert = chai.assert,
     Reflux = require('../src'),
     Q = require('q'),

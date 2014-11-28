@@ -1,6 +1,5 @@
 var invariant = require('react/lib/invariant'),
-    mixInto = require('react/lib/mixInto'),
-    mergeInto = require('react/lib/mergeInto'),
+    assign = require('react/lib/Object.assign'),
     emptyFunction = require('react/lib/emptyFunction'),
     _ = require('./utils'),
     Reflux = require('../src'),
@@ -20,7 +19,7 @@ module.exports = function(definition) {
 
     definition = definition || {};
 
-    for(var a in Reflux.StoreMethods){
+    for(var a in Reflux.StoreMethods) {
         invariant(
             allowed[a] || !(Reflux.PublisherMethods[a] || Reflux.ListenerMethods[a]),
             "Cannot override API method `%s` in Reflux.StoreMethods. " +
@@ -31,9 +30,9 @@ module.exports = function(definition) {
 
     for (var d in definition) {
         invariant(
-                allowed[d] || !(Reflux.PublisherMethods[d] || Reflux.ListenerMethods[d]),
-                "Cannot override API method `%s` in action creation. " +
-                "Use another method name or override it on Reflux.PublisherMethods / Reflux.ListenerMethods instead.",
+            allowed[d] || !(Reflux.PublisherMethods[d] || Reflux.ListenerMethods[d]),
+            "Cannot override API method `%s` in action creation. " +
+            "Use another method name or override it on Reflux.PublisherMethods / Reflux.ListenerMethods instead.",
             d
         );
     }
@@ -50,13 +49,7 @@ module.exports = function(definition) {
         }
     }
 
-    var context = {};
-    mergeInto(context, Reflux.ListenerMethods);
-    mergeInto(context, Reflux.PublisherMethods);
-    mergeInto(context, Reflux.StoreMethods);
-    mergeInto(context, definition);
-
-    mixInto(Store, context);
+    assign(Store, Reflux.ListenerMethods, Reflux.PublisherMethods, Reflux.StoreMethods, definition);
 
     var store = bindMethods(new Store(), definition);
     store.init();

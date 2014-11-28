@@ -1,5 +1,5 @@
 var invariant = require('react/lib/invariant'),
-    mergeInto = require('react/lib/mergeInto'),
+    assign = require('react/lib/Object.assign'),
     _ = require('./utils'),
     Reflux = require('../src'),
     Keep = require('./Keep'),
@@ -42,17 +42,11 @@ module.exports = function (definition) {
         _isAction: true
     };
 
-    var context = {};
-    mergeInto(context, internal);
-    mergeInto(context, Reflux.PublisherMethods);
-    mergeInto(context, Reflux.ActionMethods);
-    mergeInto(context, definition);
-
     var functor = function () {
         functor[functor.sync ? "trigger" : "triggerAsync"].apply(functor, arguments);
     };
 
-    mergeInto(functor, context);
+    assign(functor, internal, Reflux.PublisherMethods, Reflux.ActionMethods, definition);
 
     Keep.createdActions.push(functor);
 

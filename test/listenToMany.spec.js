@@ -1,4 +1,4 @@
-var merge = require('react/lib/merge'),
+var assign = require('react/lib/Object.assign'),
     assert = require('chai').assert,
     sinon = require('sinon'),
     listenToMany = require('../src/listenToMany'),
@@ -18,7 +18,7 @@ describe('the listenToMany shorthand',function(){
                 onFirstAction: sinon.spy(),
                 onSecondAction: sinon.spy()
             },
-            result = merge(context, listenToMany(listenables));
+            result = assign(context, listenToMany(listenables));
 
         it("should return object with componentWillMount and componentWillUnmount methods",function(){
             assert.isFunction(result.componentWillMount);

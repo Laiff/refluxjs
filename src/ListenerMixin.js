@@ -1,4 +1,4 @@
-var merge = require('react/lib/merge'),
+var assign = require('react/lib/Object.assign'),
     ListenerMethods = require('./ListenerMethods');
 
 /**
@@ -10,7 +10,7 @@ var merge = require('react/lib/merge'),
  *
  * @mixin ListenerMixin
  */
-module.exports = merge({
+module.exports = assign({
 
     /**
      * Cleans up all listener previously registered.
