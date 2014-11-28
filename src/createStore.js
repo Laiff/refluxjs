@@ -43,6 +43,9 @@ module.exports = function(definition) {
         this.subscriptions = [];
         this.emitter = new _.EventEmitter();
         this.eventLabel = "change";
+        assign(this, definition);
+        bindMethods(this, Store);
+        bindMethods(this, definition);
         if (!this.init || !_.isFunction(this.init)) {
             this.init = emptyFunction;
         }
@@ -51,9 +54,9 @@ module.exports = function(definition) {
         }
     }
 
-    assign(Store.prototype, ListenerMethods, PublisherMethods, StoreMethods, definition);
+    assign(Store, ListenerMethods, PublisherMethods, StoreMethods);
 
-    var store = bindMethods(new Store(), definition);
+    var store = new Store();
     store.init();
     Keep.createdStores.push(store);
 

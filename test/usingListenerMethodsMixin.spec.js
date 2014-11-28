@@ -28,13 +28,12 @@ describe("using the ListenerMethods",function(){
     describe("the listenTo function",function(){
         var listenTo = ListenerMethods.listenTo;
 
-        it("will throw error if validation of listenable returns text",function(){
-            var errormsg = "ERROR! ERROR!",
-                context = {validateListening: sinon.stub().returns(errormsg)},
+        it("will throw error if validation of listenable fails",function(){
+            var context = {validateListening: sinon.stub()},
                 listenable = "LISTENABLE";
             assert.throws(function() {
                 listenTo.call(context,listenable);
-            }, errormsg);
+            });
             assert.equal(context.validateListening.callCount,1);
             assert.equal(context.validateListening.firstCall.args[0],listenable);
         });

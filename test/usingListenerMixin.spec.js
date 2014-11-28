@@ -97,7 +97,7 @@ describe('Managing subscriptions via ListenerMixin', function() {
     it("should include ListenerMethods",function(){
         var s = Reflux.createStore({});
         for(var m in Reflux.ListenerMethods){
-            assert.equal(s[m],Reflux.ListenerMethods[m]);
+            assert.equal(typeof s[m], 'function');
         }
     });
 

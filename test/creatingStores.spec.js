@@ -1,4 +1,5 @@
-var chai = require('chai'),
+var assign = require('react/lib/Object.assign'),
+    chai = require('chai'),
     assert = chai.assert,
     Reflux = require('../src'),
     Q = require('q'),
@@ -179,7 +180,7 @@ describe('Creating stores', function() {
         });
 
         it('should get initial state from getInitialState()', function() {
-            var store = Reflux.createStore(_.extend(baseDefinition, {
+            var store = Reflux.createStore(assign({}, baseDefinition, {
                 getInitialState: function () {
                     return ['initial state'];
                 }
@@ -189,7 +190,7 @@ describe('Creating stores', function() {
         });
 
         it('should get initial state from getInitialState() returned promise', function() {
-            var store = Reflux.createStore(_.extend(baseDefinition, {
+            var store = Reflux.createStore(assign({}, baseDefinition, {
                 getInitialState: function () {
                     return Q.Promise(function (resolve) {
                         setTimeout(function () {
@@ -233,9 +234,9 @@ describe('Creating stores', function() {
                 store = Reflux.createStore(def);
 
             it("should listenTo all listenables with the corresponding callbacks",function(){
-                assert.deepEqual(listenables.foo.listen.firstCall.args,[def.onFoo,store]);
-                assert.deepEqual(listenables.bar.listen.firstCall.args,[def.bar,store]);
-                assert.deepEqual(listenables.baz.listen.firstCall.args,[def.onBaz,store]);
+                assert.deepEqual(listenables.foo.listen.firstCall.args,[store.onFoo,store]);
+                assert.deepEqual(listenables.bar.listen.firstCall.args,[store.bar,store]);
+                assert.deepEqual(listenables.baz.listen.firstCall.args,[store.onBaz,store]);
             });
 
             it("should not try to listen to actions without corresponding props in the store",function(){
@@ -256,8 +257,8 @@ describe('Creating stores', function() {
 
         describe("when given an array",function(){
             var first = {foo:{listen:sinon.spy()}},
-                second = {bar:{listen:sinon.spy()},baz:{listen:sinon.spy()}},
-                arr = [first,second],
+                second = {bar:{listen:sinon.spy()}, baz:{listen:sinon.spy()}},
+                arr = [first, second],
                 def = {foo:"foo",bar:"bar",baz:"baz",listenables:arr},
                 store = Reflux.createStore(def);
 
@@ -271,11 +272,19 @@ describe('Creating stores', function() {
     });
 
     it("should copy all props from definition",function(){
-        var def = {random:"FOO",preEmit:"BAZ",blah:"BAH"},
+        var def = {
+                random:sinon.stub().returns("FOO"),
+                preEmit:sinon.stub().returns("BAZ"),
+                blah:sinon.stub().returns("BAH")
+            },
             store = Reflux.createStore(def);
-        assert.equal(store.random,def.random);
-        assert.equal(store.preEmit,def.preEmit);
-        assert.equal(store.blah,def.blah);
+        assert.isDefined(store.random);
+        assert.isDefined(store.preEmit);
+        assert.isDefined(store.blah);
+
+        assert.equal(store.random(), 'FOO');
+        assert.equal(store.preEmit(), 'BAZ');
+        assert.equal(store.blah(), 'BAH');
     });
 
     it("should fail when trying to override API methods",function(){
@@ -288,29 +297,38 @@ describe('Creating stores', function() {
     });
 
     it("should include ListenerMethods",function(){
+        var store = Reflux.createStore({});
         for(var m in Reflux.ListenerMethods){
-            assert.equal(Reflux.createStore({})[m],Reflux.ListenerMethods[m]);
+            assert.isDefined(store[m]);
         }
     });
 
     it("should include PublisherMethods",function(){
+        var store = Reflux.createStore({});
         for(var m in Reflux.PublisherMethods){
-            assert.equal(Reflux.createStore({})[m],Reflux.PublisherMethods[m]);
+            assert.isDefined(store[m]);
         }
     });
 
     it("should copy properties from Reflux.StoreMethods into the store",function(){
-        Reflux.StoreMethods = {preEmit: function() {}, exampleFn: function() {}};
+        Reflux.StoreMethods.preEmit = sinon.stub().returns('preEmit');
+        Reflux.StoreMethods.exampleFn = sinon.stub().returns('exampleFn');
         var store = Reflux.createStore();
-        assert.equal(store.preEmit, Reflux.StoreMethods.preEmit);
-        assert.equal(store.exampleFn, Reflux.StoreMethods.exampleFn);
+        assert.isDefined(store.preEmit);
+        assert.isDefined(store.exampleFn);
+        assert.equal(store.preEmit(), 'preEmit');
+        assert.equal(store.exampleFn(), 'exampleFn');
+
+        delete Reflux.StoreMethods.preEmit;
+        delete Reflux.StoreMethods.exampleFn;
     });
 
     it("should fail when trying to override API methods in Reflux.StoreMethods",function(){
-        Reflux.StoreMethods = { listen: "BAR" };
+        Reflux.StoreMethods.listen = "BAR";
         assert.throws(function(){
             Reflux.createStore({});
         });
+        delete Reflux.StoreMethods.listen;
     });
 
     it("should not mix in its own methods into ListenerMethods",function(){

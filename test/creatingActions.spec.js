@@ -32,20 +32,25 @@ describe('Creating action', function() {
     describe('Reflux.ActionMethods', function() {
 
       afterEach(function(){
-          Reflux.ActionMethods = {};
+          for (var key in Reflux.ActionMethods) {
+              delete Reflux.ActionMethods[key];
+          }
       });
 
       it("should copy properties from Reflux.ActionMethods into the action",function(){
-          Reflux.ActionMethods = {preEmit: function() {}, exampleFn: function() {}};
+          Reflux.ActionMethods.preEmit = sinon.stub().returns('preEmit');
+          Reflux.ActionMethods.exampleFn = sinon.stub().returns('exampleFn');
           var action = Reflux.createAction();
-          assert.equal(action.preEmit, Reflux.ActionMethods.preEmit);
-          assert.equal(action.exampleFn, Reflux.ActionMethods.exampleFn);
+          assert.isDefined(action.preEmit);
+          assert.isDefined(action.exampleFn);
+          assert.equal(action.preEmit(), 'preEmit');
+          assert.equal(action.exampleFn(), 'exampleFn');
       });
 
       it("should throw an error if you overwrite any API other than preEmit and shouldEmit in Reflux.ActionMethods",function(){
-        Reflux.ActionMethods.listen = "FOO";
+          Reflux.ActionMethods.listen = "FOO";
           assert.throws(function(){
-              Reflux.createAction({});
+              Reflux.createAction();
           });
       });
 

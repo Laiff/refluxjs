@@ -34,7 +34,7 @@ exports.staticJoinCreator = function(strategy){
  */
 exports.instanceJoinCreator = function(strategy){
     return function(/* listenables..., callback*/){
-        invariant(arguments.length >= 3, 'Cannot create a join with less than 2 listenables!');
+        invariant(arguments.length > 2, 'Cannot create a join with less than 2 listenables!');
         var listenables = slice.call(arguments),
             callback = listenables.pop(),
             numberOfListenables = listenables.length,

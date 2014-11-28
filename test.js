@@ -3,8 +3,6 @@
  */
 var Reflux = require('./src');
 
-var action = Reflux.createActions(["load","loadComplete","loadError"]).load;
-action.preEmit = function() {};
-action();
-
-console.log(action);
+Reflux.ActionMethods.listen = "FOO";
+Reflux.createAction();
+console.log();

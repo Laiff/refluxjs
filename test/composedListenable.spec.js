@@ -190,7 +190,7 @@ describe('Composed listenable with stores', function() {
                     this.listenTo(storeAll, this.trigger);
                     this.listenTo(anotherAction);
                 };
-                assign(Component, Reflux.ListenerMixin);
+                assign(Component.prototype, Reflux.ListenerMixin);
             });
 
             it('should not crash', function() {

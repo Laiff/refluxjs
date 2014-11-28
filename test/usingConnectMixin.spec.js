@@ -97,6 +97,7 @@ describe('using the connect(...) mixin',function(){
             assert.deepEqual([_.object([key],[triggerdata])],context.setState.firstCall.args);
         });
     });
+/*
     describe("together with ListenerMixin in a React component",function(){
         var store = Reflux.createStore({}),
             def = {setState:function(){}},
@@ -108,4 +109,5 @@ describe('using the connect(...) mixin',function(){
             console.warn.restore();
         });
     });
+*/
 });

@@ -105,11 +105,14 @@ describe('using joins',function(){
             var store = Reflux.createStore(),
                 action1 = {listen:sinon.spy()},
                 action2 = {listen:sinon.spy()},
-                action3 = {listen:sinon.spy()};
-            store.validateListening = sinon.stub().returns('ERROR! ERROR!');
+                action3 = {listen:sinon.spy()},
+                action4 = {};
             it('should throw an error and not set any listens',function(){
-                assert.throws(function(){
-                    store.joinTrailing(action1,action2,action3,function(){});
+                assert.throws(function() {
+                    store.joinTrailing(action1,function(){});
+                });
+                assert.throws(function() {
+                    store.joinTrailing(action1,action2,action3,action4,function(){});
                 });
                 assert.equal(0,action1.listen.callCount);
                 assert.equal(0,action2.listen.callCount);
