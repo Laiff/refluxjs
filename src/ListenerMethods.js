@@ -50,7 +50,7 @@ module.exports = {
      */
     validateListening: function (listenable) {
         invariant(
-                listenable !== this,
+            listenable !== this,
             "Listener is not able to listen to itself"
         );
         invariant(
