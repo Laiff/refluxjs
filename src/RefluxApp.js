@@ -5,7 +5,7 @@ var daggy = require('daggy'),
     invariant = require('react/lib/invariant'),
     mapObject = require('react/lib/mapObject'),
 
-    Store = require('./Store'),
+    Store = require('./RefluxClass'),
     Action = require('./Action');
 
 function RefluxApp(options) {
@@ -17,7 +17,7 @@ function RefluxApp(options) {
 
 RefluxApp.prototype.registerStore = function(store) {
     invariant(
-        store instanceof Store,
+        store instanceof StoreClass,
         "Only Stores can be registered here"
     );
     this.stores[store.symbol] = store;
