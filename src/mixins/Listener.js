@@ -1,6 +1,6 @@
 var invariant = require('react/lib/invariant'),
-    _ = require('./utils'),
-    maker = require('./joins').instanceJoinCreator;
+    _ = require('./../utils'),
+    maker = require('./../joins').instanceJoinCreator;
 
 /**
  * A module of methods related to listening.

@@ -26,7 +26,8 @@
     "xtend": "~4.0.0",
     "setimmediate2": "~1.1.4",
     "daggy": "0.0.1",
-    "es6-symbol": "~0.1.1"
+    "es6-symbol": "~0.1.1",
+    "fantasy-json": "git://github.com/Laiff/fantasy-json.git#v0.0.4"
   },
   "peerDependencies": {
     "react": ">= 0.12.1"

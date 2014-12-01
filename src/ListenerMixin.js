@@ -1,5 +1,5 @@
 var assign = require('react/lib/Object.assign'),
-    ListenerMethods = require('./ListenerMethods');
+    ListenerMethods = require('./mixins/Listener');
 
 /**
  * A module meant to be consumed as a mixin by a React component. Supplies the methods from
@@ -15,6 +15,6 @@ module.exports = assign({
     /**
      * Cleans up all listener previously registered.
      */
-    componentWillUnmount: ListenerMethods.stopListeningToAll
+    componentWillUnmount: Listener.stopListeningToAll
 
-}, ListenerMethods);
+}, Listener);

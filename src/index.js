@@ -1,8 +1,8 @@
-exports.ListenerMethods = require('./ListenerMethods');
-exports.PublisherMethods = require('./PublisherMethods');
+exports.ListenerMethods = require('./mixins/Listener');
+exports.PublisherMethods = require('./mixins/Publisher');
 
-exports.StoreMethods = require('./StoreMethods');
-exports.ActionMethods = require('./ActionMethods');
+exports.StoreMethods = require('./mixins/Store');
+exports.ActionMethods = require('./mixins/Action');
 
 exports.createAction = require('./createAction');
 exports.createActions = require('./createActions');

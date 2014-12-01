@@ -28,7 +28,7 @@ exports.staticJoinCreator = function(strategy){
 };
 
 /**
- * Used in `ListenerMethods.js` to create the instance join methods
+ * Used in `Listener.js` to create the instance join methods
  * @param {String} strategy Which strategy to use when tracking listenable trigger arguments
  * @returns {Function} An instance method which sets up a join listen on the given listenables using the given strategy
  */

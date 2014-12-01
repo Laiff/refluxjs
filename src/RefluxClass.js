@@ -7,7 +7,9 @@ var ReactErrorUtils = require('react/lib/ReactErrorUtils'),
     assign = require('react/lib/Object.assign'),
     invariant = require('react/lib/invariant'),
     keyMirror = require('react/lib/keyMirror'),
-    keyOf = require('react/lib/keyOf');
+    keyOf = require('react/lib/keyOf'),
+
+    RefluxStore = require('./RefluxStore');
 
 var MIXINS_KEY = keyOf({mixins: null});
 
@@ -63,8 +65,25 @@ var RefluxClassInterface = {
      */
     getInitialState: SpecPolicy.DEFINE_MANY_MERGED,
 
-    // Delegate methods
+    /**
+     * Hook used by the publisher that is invoked before emitting
+     * and before `shouldEmit`. The arguments are the ones that the action
+     * is invoked with. If this function returns something other than
+     * undefined, that will be passed on as arguments for shouldEmit and
+     * emission.
+     */
+    preEmit: SpecPolicy.OVERRIDE_BASE,
 
+    /**
+     * Hook used by the publisher after `preEmit` to determine if the
+     * event should be emitted with given arguments. This may be overridden
+     * in your application, default implementation always returns true.
+     *
+     * @returns {Boolean} true if event should be emitted
+     */
+    shouldEmit: SpecPolicy.OVERRIDE_BASE,
+
+    // Delegate methods
     /**
      * Invoked when the store have been created.
      * Usual used for initialize store fields with initial values
@@ -178,9 +197,9 @@ function mixSpecIntoStore(Constructor, spec) {
         'use a component class as a mixin. Instead, just use a regular object.'
     );
     invariant(
-        !Reflux.isValidStore(spec),
+        !RefluxStore.isValidStore(spec),
         'RefluxClass: You\'re attempting to ' +
-        'use a component as a mixin. Instead, just use a regular object.'
+        'use a store as a mixin. Instead, just use a regular object.'
     );
 
     var proto = Constructor.prototype;
@@ -371,6 +390,26 @@ function bindAutoBindMethods(component) {
  */
 var RefluxClassMixin = {
 
+    /**
+     * Hook used by the publisher that is invoked before emitting
+     * and before `shouldEmit`. The arguments are the ones that the action
+     * is invoked with. If this function returns something other than
+     * undefined, that will be passed on as arguments for shouldEmit and
+     * emission.
+     */
+    preEmit: function () {
+    },
+
+    /**
+     * Hook used by the publisher after `preEmit` to determine if the
+     * event should be emitted with given arguments. This may be overridden
+     * in your application, default implementation always returns true.
+     *
+     * @returns {Boolean} true if event should be emitted
+     */
+    shouldEmit: function () {
+        return true;
+    }
 };
 
 var RefluxClassBase = function() {};
@@ -408,3 +447,5 @@ var RefluxClass = {
         return Constructor;
     }
 };
+
+module.expots = RefluxClass;
