@@ -8,6 +8,23 @@ var daggy = require('daggy'),
     RefluxStore = require('./RefluxStore'),
     Action = require('./mixins/Action');
 
+/**
+ * Reflux application integrated with React and react-router
+ * Example usage
+ *
+ * RefluxApp.run(function(refluxContext) {
+ *   ReactContext.withContext({reflux: refluxContext}, function() {
+ *     Router.create(routes, location).run(Handler, state) {
+ *       React.render(<Handler />, mountNode)
+ *     }
+ *   })
+ * })
+ *
+ *
+ * @param options
+ * @returns {*}
+ * @constructor
+ */
 function RefluxApp(options) {
     var self = daggy.getInstance(this, RefluxApp);
     self.stores = {};

@@ -2,7 +2,8 @@
  * Created by laiff on 29.11.14.
  */
 
-var ReactErrorUtils = require('react/lib/ReactErrorUtils'),
+var ReactContext = require('react/lib/ReactContext'),
+    ReactErrorUtils = require('react/lib/ReactErrorUtils'),
 
     assign = require('react/lib/Object.assign'),
     invariant = require('react/lib/invariant'),
@@ -11,7 +12,8 @@ var ReactErrorUtils = require('react/lib/ReactErrorUtils'),
 
     RefluxStore = require('./RefluxStore');
 
-var MIXINS_KEY = keyOf({mixins: null});
+var MIXINS_KEY = keyOf({mixins: null}),
+    REFLUX = keyOf({reflux: null});
 
 /**
  * Policies that describe methods in `RefluxClass`.
@@ -35,7 +37,12 @@ var SpecPolicy = keyMirror({
      * objects. We try to merge the keys of the return values of all the mixed in
      * functions. If there is a key conflict we throw.
      */
-    DEFINE_MANY_MERGED: null
+    DEFINE_MANY_MERGED: null,
+    /**
+     * These methods are similar to DEFINE_MANY, except we assume they return values.
+     * We return true if all mixed method return true.
+     */
+    DEFINE_MANY_ALL: null
 });
 
 
@@ -72,7 +79,7 @@ var RefluxClassInterface = {
      * undefined, that will be passed on as arguments for shouldEmit and
      * emission.
      */
-    preEmit: SpecPolicy.OVERRIDE_BASE,
+    preEmit: SpecPolicy.DEFINE_MANY_ALL,
 
     /**
      * Hook used by the publisher after `preEmit` to determine if the
@@ -81,7 +88,7 @@ var RefluxClassInterface = {
      *
      * @returns {Boolean} true if event should be emitted
      */
-    shouldEmit: SpecPolicy.OVERRIDE_BASE,
+    shouldEmit: SpecPolicy.DEFINE_MANY_ALL,
 
     // Delegate methods
     /**
@@ -100,6 +107,14 @@ var RefluxClassInterface = {
      * @optional
      */
     storeWillInit: SpecPolicy.DEFINE_MANY,
+
+    /**
+     * Invoked when store will ready.
+     * This method usual used for init fields from other stores
+     *
+     * @optional
+     */
+    storeWillReady : SpecPolicy.DEFINE_MANY,
 
     /**
      * Invoked when the store end lifecycle.
@@ -121,7 +136,7 @@ var RefluxClassInterface = {
     serializeState: SpecPolicy.DEFINE_MANY_MERGED,
 
     /**
-     * Invoked on client-side only before store have start lifecycle
+     * Invoked on client-side only before store have been start lifecycle
      *
      * @param {object} serialized store state
      * @optional
@@ -173,7 +188,8 @@ function validateMethodOverride(proto, name) {
     if (proto.hasOwnProperty(name)) {
         invariant(
             specPolicy === SpecPolicy.DEFINE_MANY ||
-            specPolicy === SpecPolicy.DEFINE_MANY_MERGED,
+            specPolicy === SpecPolicy.DEFINE_MANY_MERGED ||
+            specPolicy === SpecPolicy.DEFINE_MANY_ALL,
             'RefluxClassInterface: You are attempting to define ' +
             '`%s` on your component more than once. This conflict may be due ' +
             'to a mixin.',
@@ -194,7 +210,7 @@ function mixSpecIntoStore(Constructor, spec) {
     invariant(
         typeof spec !== 'function',
         'RefluxClass: You\'re attempting to ' +
-        'use a component class as a mixin. Instead, just use a regular object.'
+        'use a store class as a mixin. Instead, just use a regular object.'
     );
     invariant(
         !RefluxStore.isValidStore(spec),
@@ -229,7 +245,7 @@ function mixSpecIntoStore(Constructor, spec) {
         } else {
             // Setup methods on prototype:
             // The following member methods should not be automatically bound:
-            // 1. Expected ReactClass methods (in the "interface").
+            // 1. Expected RefluxClass methods (in the "interface").
             // 2. Overridden methods (that were mixed in).
             var isRefluxClassMethod =
                 RefluxClassInterface.hasOwnProperty(name);
@@ -252,24 +268,27 @@ function mixSpecIntoStore(Constructor, spec) {
                 if (isAlreadyDefined) {
                     var specPolicy = RefluxClassInterface[name];
 
+                    // For methods which are defined more than once, call the existing
+                    // methods before calling the new property, merging if appropriate.
+
                     // These cases should already be caught by validateMethodOverride
                     invariant(
                         isRefluxClassMethod && (
                         specPolicy === SpecPolicy.DEFINE_MANY_MERGED ||
-                        specPolicy === SpecPolicy.DEFINE_MANY
+                        specPolicy === SpecPolicy.DEFINE_MANY ||
+                        specPolicy === SpecPolicy.DEFINE_MANY_ALL
                         ),
                         'RefluxClass: Unexpected spec policy %s for key %s ' +
                         'when mixing in component specs.',
                         specPolicy,
                         name
                     );
-
-                    // For methods which are defined more than once, call the existing
-                    // methods before calling the new property, merging if appropriate.
                     if (specPolicy === SpecPolicy.DEFINE_MANY_MERGED) {
                         proto[name] = createMergedResultFunction(proto[name], property);
                     } else if (specPolicy === SpecPolicy.DEFINE_MANY) {
                         proto[name] = createChainedFunction(proto[name], property);
+                    } else if (specPolicy === SpecPolicy.DEFINE_MANY_ALL) {
+                        proto[name] = createChainedAllFunction(proto[name], property);
                     }
                 } else {
                     proto[name] = property;
@@ -340,7 +359,7 @@ function createMergedResultFunction(one, two) {
 }
 
 /**
- * Creates a function that invokes two functions and ignores their return vales.
+ * Creates a function that invokes two functions and ignores their return values.
  *
  * @param {function} one Function to invoke first.
  * @param {function} two Function to invoke second.
@@ -351,6 +370,21 @@ function createChainedFunction(one, two) {
     return function chainedFunction() {
         one.apply(this, arguments);
         two.apply(this, arguments);
+    };
+}
+
+/**
+ * Creates a function that invokes two functions and return value combined via logical and.
+ *
+ * @param {function} one Function to invoke first.
+ * @param {function} two Function to invoke second.
+ * @return {function} Function that invokes the two argument functions.
+ * @private
+ */
+function createChainedAllFunction(one, two) {
+    return function chainedAllFunction() {
+        return !!one.apply(this, arguments) &&
+               !!two.apply(this, arguments);
     };
 }
 
@@ -389,26 +423,13 @@ function bindAutoBindMethods(component) {
  * @lends RefluxClass.prototype
  */
 var RefluxClassMixin = {
-
-    /**
-     * Hook used by the publisher that is invoked before emitting
-     * and before `shouldEmit`. The arguments are the ones that the action
-     * is invoked with. If this function returns something other than
-     * undefined, that will be passed on as arguments for shouldEmit and
-     * emission.
-     */
-    preEmit: function () {
-    },
-
-    /**
-     * Hook used by the publisher after `preEmit` to determine if the
-     * event should be emitted with given arguments. This may be overridden
-     * in your application, default implementation always returns true.
-     *
-     * @returns {Boolean} true if event should be emitted
-     */
-    shouldEmit: function () {
-        return true;
+    scoped : function() {
+        invariant(
+            typeof ReactContext.current[REFLUX] === 'object',
+            'All manipulations should perform after lifecycle has been started. Occured in `%s`',
+            this.displayName
+        );
+        return ReactContext.current[REFLUX][this.symbol];
     }
 };
 

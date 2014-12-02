@@ -7,6 +7,27 @@ var _ = require('./../utils');
 module.exports = {
 
     /**
+     * Hook used by the publisher that is invoked before emitting
+     * and before `shouldEmit`. The arguments are the ones that the action
+     * is invoked with. If this function returns something other than
+     * undefined, that will be passed on as arguments for shouldEmit and
+     * emission.
+     */
+    preEmit: function () {
+    },
+
+    /**
+     * Hook used by the publisher after `preEmit` to determine if the
+     * event should be emitted with given arguments. This may be overridden
+     * in your application, default implementation always returns true.
+     *
+     * @returns {Boolean} true if event should be emitted
+     */
+    shouldEmit: function () {
+        return true;
+    },
+
+    /**
      * Subscribes the given callback for action triggered
      *
      * @param {Function} callback The callback to register as event handler
